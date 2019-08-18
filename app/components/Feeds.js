@@ -1,33 +1,21 @@
 import React, { Component } from "react";
-import {
-  Text,
-  View,
-  SafeAreaView,
-  TouchableHighlight,
-  TouchableOpacity,
-  Image,
-  Platform
-} from "react-native";
-import styles from "../../constants/styles";
-import { Icon } from "native-base";
+import { Text, View, TouchableOpacity, Image } from "react-native";
+import { Icon, Thumbnail } from "native-base";
 import logo from "../../assets/Images/instagram.png";
-import Feeds from "../components/Feeds";
+import Face from "../../assets/Images/face.jpg";
+import { Avatar } from "react-native-elements";
 
-export default class Feed extends Component {
+export default class Feeds extends Component {
   render() {
     return (
-      <SafeAreaView style={styles.SafeArea}>
-        <View style={{ width: "100%", flex: 1 }}>
+      <View>
+        <View style={{ width: "100%" }}>
           {/* Header */}
           <View
             style={{
               width: "100%",
               height: 50,
-              backgroundColor: "white",
-              elevation: 3,
-              borderBottomWidth: Platform.OS == "ios" ? 0.2 : 0,
-              borderBottomColor: "gainsboro",
-              borderStyle: "solid"
+              backgroundColor: "white"
             }}
           >
             <View style={{ width: "100%", flex: 1, flexDirection: "row" }}>
@@ -47,9 +35,13 @@ export default class Feed extends Component {
                     width: "30%"
                   }}
                 >
-                  <Icon name="camera" type="Feather" />
+                  <View style={{ borderRadius: 100, width: 30, height: 30 }}>
+                    <Avatar rounded source={Face} />
+                  </View>
                 </TouchableOpacity>
-                <Image source={logo} style={{ width: 100, height: 30 }} />
+                <Text style={{ color: "black", fontWeight: "bold" }}>
+                  Ali Haider
+                </Text>
               </View>
               <View
                 style={{
@@ -67,17 +59,14 @@ export default class Feed extends Component {
                     width: "30%"
                   }}
                 >
-                  <Icon name="paper-plane" type="SimpleLineIcons" />
+                  <Icon name="dots-vertical" type="MaterialCommunityIcons" />
                 </TouchableOpacity>
               </View>
             </View>
           </View>
           {/* Header ends */}
-          <View style={{ width: "100%" }}>
-            <Feeds />
-          </View>
         </View>
-      </SafeAreaView>
+      </View>
     );
   }
 }
