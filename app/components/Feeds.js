@@ -118,13 +118,21 @@ export default class Feeds extends Component {
 
             {/* feed footer */}
             <View style={{ width: "100%" }}>
-              <View style={{ width: "100%", height: 40, flexDirection: "row" }}>
+              <View
+                style={{
+                  width: "100%",
+                  height: 40,
+                  flexDirection: "row",
+                  justifyContent: "flex-start"
+                }}
+              >
                 <View
                   style={{
                     width: "10%",
                     height: 40,
                     justifyContent: "center",
-                    alignItems: "center"
+                    alignItems: "center",
+                    marginLeft: 10
                   }}
                 >
                   <TouchableOpacity
@@ -150,14 +158,6 @@ export default class Feeds extends Component {
                     style={{ fontSize: 22 }}
                   />
                 </View>
-                <View
-                  style={{
-                    width: "60%",
-                    height: 40,
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                />
               </View>
               <View style={{ paddingLeft: 10 }}>
                 <Text style={{ fontWeight: "bold" }}>6 likes</Text>

@@ -9,6 +9,7 @@ export default class App extends Component {
   state = {
     activeTab: 0
   };
+
   render() {
     return (
       <View style={{ flex: 1 }}>
