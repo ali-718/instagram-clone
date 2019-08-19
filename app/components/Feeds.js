@@ -15,7 +15,8 @@ import { Avatar } from "react-native-elements";
 export default class Feeds extends Component {
   state = {
     data: [1, 2, 3, 4, 5],
-    refresh: false
+    refresh: false,
+    color: false
   };
 
   loadNew = () => {
@@ -114,6 +115,60 @@ export default class Feeds extends Component {
               style={{ width: "100%", height: 250, resizeMode: "cover" }}
             />
             {/* feed image ends */}
+
+            {/* feed footer */}
+            <View style={{ width: "100%" }}>
+              <View style={{ width: "100%", height: 40, flexDirection: "row" }}>
+                <View
+                  style={{
+                    width: "10%",
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <TouchableOpacity
+                    onPress={() => this.setState({ color: !this.state.color })}
+                  >
+                    <Icon
+                      name={this.state.color ? "ios-heart" : "ios-heart-empty"}
+                      style={{ color: this.state.color ? "red" : "black" }}
+                    />
+                  </TouchableOpacity>
+                </View>
+                <View
+                  style={{
+                    width: "10%",
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <Icon
+                    name="message1"
+                    type="AntDesign"
+                    style={{ fontSize: 22 }}
+                  />
+                </View>
+                <View
+                  style={{
+                    width: "60%",
+                    height: 40,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                />
+              </View>
+              <View style={{ paddingLeft: 10 }}>
+                <Text style={{ fontWeight: "bold" }}>6 likes</Text>
+              </View>
+              <View style={{ paddingLeft: 10 }}>
+                <Text style={{ fontSize: 10, color: "gray" }}>
+                  38 minutes ago
+                </Text>
+              </View>
+            </View>
+            {/* feed footer ends */}
           </View>
         )}
       />
