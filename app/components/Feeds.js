@@ -51,7 +51,7 @@ export default class Feeds extends Component {
                   id: data.key,
                   url: data.val().url,
                   caption: data.val().caption,
-                  posted: data.val().posted,
+                  posted: that.timeConverter(data.val().posted),
                   avatar: childSnapshot.val().avatar,
                   username: childSnapshot.val().username
                 });
@@ -67,6 +67,51 @@ export default class Feeds extends Component {
 
   loadNew = () => {
     this.loadFeed();
+  };
+
+  pluralCheck = s => {
+    if (s === 1) {
+      return " ago";
+    } else {
+      return "s ago";
+    }
+  };
+
+  timeConverter = timestamp => {
+    var a = new Date(timestamp * 1000);
+    var seconds = Math.floor((new Date() - a) / 1000);
+
+    var intervals = Math.floor(seconds / 31536000);
+
+    if (intervals > 1) {
+      return intervals + " year" + this.pluralCheck(intervals);
+    }
+
+    intervals = Math.floor(seconds / 2592000);
+
+    if (intervals > 1) {
+      return intervals + " month" + this.pluralCheck(intervals);
+    }
+
+    intervals = Math.floor(seconds / 86400);
+
+    if (intervals > 1) {
+      return intervals + " day" + this.pluralCheck(intervals);
+    }
+
+    intervals = Math.floor(seconds / 3600);
+
+    if (intervals > 1) {
+      return intervals + " hour" + this.pluralCheck(intervals);
+    }
+
+    intervals = Math.floor(seconds / 60);
+
+    if (intervals > 1) {
+      return intervals + " minute" + this.pluralCheck(intervals);
+    }
+
+    return Math.floor(seconds) + " second" + this.pluralCheck(seconds);
   };
 
   render() {
@@ -231,7 +276,7 @@ export default class Feeds extends Component {
                   </View>
                   <View style={{ paddingLeft: 10 }}>
                     <Text style={{ fontSize: 10, color: "gray" }}>
-                      38 minutes ago
+                      {item.posted}
                     </Text>
                   </View>
                 </View>
