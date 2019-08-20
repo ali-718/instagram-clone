@@ -5,173 +5,242 @@ import {
   TouchableOpacity,
   Image,
   ScrollView,
-  FlatList
+  FlatList,
+  ActivityIndicator
 } from "react-native";
 import { Icon, Thumbnail } from "native-base";
 import logo from "../../assets/Images/instagram.png";
 import Face from "../../assets/Images/face.jpg";
 import { Avatar } from "react-native-elements";
+import { f, database, auth, storage } from "../../config/config";
 
 export default class Feeds extends Component {
   state = {
-    data: [1, 2, 3, 4, 5],
+    data: [],
     refresh: false,
-    color: false
+    color: false,
+    isLoading: true
+  };
+
+  componentDidMount() {
+    this.loadFeed();
+  }
+
+  loadFeed = () => {
+    this.setState({
+      refresh: true,
+      data: []
+    });
+
+    var that = this;
+
+    database
+      .ref("photos")
+      .orderByChild("posted")
+      .once("value")
+      .then(snapshot => {
+        const exist = snapshot.val() !== null;
+        if (exist) {
+          snapshot.forEach(data => {
+            database
+              .ref("users")
+              .child(data.val().author)
+              .once("value")
+              .then(childSnapshot => {
+                that.state.data.push({
+                  id: data.key,
+                  url: data.val().url,
+                  caption: data.val().caption,
+                  posted: data.val().posted,
+                  avatar: childSnapshot.val().avatar,
+                  username: childSnapshot.val().username
+                });
+                this.setState({
+                  refresh: false,
+                  isLoading: false
+                });
+              });
+          });
+        }
+      });
   };
 
   loadNew = () => {
-    this.setState({
-      refresh: true
-    });
-
-    this.setState({
-      refresh: false,
-      data: [6, 7, 8, 9, 10]
-    });
+    this.loadFeed();
   };
+
   render() {
     return (
-      <FlatList
-        onRefresh={() => this.loadNew()}
-        refreshing={this.state.refresh}
-        style={{ flex: 1, backgroundColor: "#eee" }}
-        data={this.state.data}
-        keyExtractor={(item, index) => index.toString()}
-        renderItem={({ item, index }) => (
+      <View style={{ flex: 1 }}>
+        {this.state.isLoading === true ? (
           <View
-            key={index}
             style={{
-              width: "100%",
               flex: 1,
-              backgroundColor: "white"
+              width: "100%",
+              justifyContent: "center",
+              alignItems: "center"
             }}
           >
-            {/* Feed header */}
-            <View
-              style={{
-                width: "100%",
-                flex: 1,
-                flexDirection: "row",
-                marginTop: 20,
-                marginBottom: 15
-              }}
-            >
+            <ActivityIndicator size="large" />
+          </View>
+        ) : (
+          <FlatList
+            onRefresh={() => this.loadNew()}
+            refreshing={this.state.refresh}
+            style={{ flex: 1, backgroundColor: "#eee" }}
+            data={this.state.data}
+            keyExtractor={(item, index) => index.toString()}
+            renderItem={({ item, index }) => (
               <View
-                style={{
-                  width: "50%",
-                  flex: 1,
-                  justifyContent: "flex-start",
-                  flexDirection: "row",
-                  alignItems: "center"
-                }}
-              >
-                <TouchableOpacity
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "30%"
-                  }}
-                >
-                  <View style={{ borderRadius: 100, width: 30, height: 30 }}>
-                    <Avatar rounded source={Face} />
-                  </View>
-                </TouchableOpacity>
-                <Text style={{ color: "black", fontWeight: "bold" }}>
-                  Ali Haider
-                </Text>
-              </View>
-              <View
-                style={{
-                  width: "50%",
-                  flex: 1,
-                  justifyContent: "flex-end",
-                  flexDirection: "row",
-                  alignItems: "center"
-                }}
-              >
-                <TouchableOpacity
-                  style={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    width: "30%"
-                  }}
-                >
-                  <Icon
-                    name="dots-vertical"
-                    type="MaterialCommunityIcons"
-                    style={{ fontSize: 25 }}
-                  />
-                </TouchableOpacity>
-              </View>
-            </View>
-            {/* Feed header ends */}
-
-            {/* feed image */}
-            <Image
-              source={{
-                uri: `https://source.unsplash.com/random/${Math.random() * 800 +
-                  500}`
-              }}
-              style={{ width: "100%", height: 250, resizeMode: "cover" }}
-            />
-            {/* feed image ends */}
-
-            {/* feed footer */}
-            <View style={{ width: "100%" }}>
-              <View
+                key={index}
                 style={{
                   width: "100%",
-                  height: 40,
-                  flexDirection: "row",
-                  justifyContent: "flex-start"
+                  flex: 1,
+                  backgroundColor: "white"
                 }}
               >
+                {console.log(this.state)}
+                {/* Feed header */}
                 <View
                   style={{
-                    width: "10%",
-                    height: 40,
-                    justifyContent: "center",
-                    alignItems: "center",
-                    marginLeft: 10
+                    width: "100%",
+                    flex: 1,
+                    flexDirection: "row",
+                    marginTop: 20,
+                    marginBottom: 15
                   }}
                 >
-                  <TouchableOpacity
-                    onPress={() => this.setState({ color: !this.state.color })}
+                  <View
+                    style={{
+                      width: "50%",
+                      flex: 1,
+                      justifyContent: "flex-start",
+                      flexDirection: "row",
+                      alignItems: "center"
+                    }}
                   >
-                    <Icon
-                      name={this.state.color ? "ios-heart" : "ios-heart-empty"}
-                      style={{ color: this.state.color ? "red" : "black" }}
-                    />
-                  </TouchableOpacity>
+                    <TouchableOpacity
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "30%"
+                      }}
+                    >
+                      <View
+                        style={{ borderRadius: 100, width: 30, height: 30 }}
+                      >
+                        <Avatar rounded source={{ uri: item.avatar }} />
+                      </View>
+                    </TouchableOpacity>
+                    <Text style={{ color: "black", fontWeight: "bold" }}>
+                      {item.username}
+                    </Text>
+                  </View>
+                  <View
+                    style={{
+                      width: "50%",
+                      flex: 1,
+                      justifyContent: "flex-end",
+                      flexDirection: "row",
+                      alignItems: "center"
+                    }}
+                  >
+                    <TouchableOpacity
+                      style={{
+                        justifyContent: "center",
+                        alignItems: "center",
+                        width: "30%"
+                      }}
+                    >
+                      <Icon
+                        name="dots-vertical"
+                        type="MaterialCommunityIcons"
+                        style={{ fontSize: 25 }}
+                      />
+                    </TouchableOpacity>
+                  </View>
                 </View>
-                <View
-                  style={{
-                    width: "10%",
-                    height: 40,
-                    justifyContent: "center",
-                    alignItems: "center"
+                {/* Feed header ends */}
+
+                {/* feed image */}
+                <Image
+                  source={{
+                    uri: item.url
                   }}
-                >
-                  <Icon
-                    name="message1"
-                    type="AntDesign"
-                    style={{ fontSize: 22 }}
-                  />
+                  style={{ width: "100%", height: 250, resizeMode: "cover" }}
+                />
+                {/* feed image ends */}
+
+                {/* feed footer */}
+                <View style={{ width: "100%" }}>
+                  <View
+                    style={{
+                      width: "100%",
+                      height: 40,
+                      flexDirection: "row",
+                      justifyContent: "flex-start"
+                    }}
+                  >
+                    <View
+                      style={{
+                        width: "10%",
+                        height: 40,
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginLeft: 10
+                      }}
+                    >
+                      <TouchableOpacity
+                        onPress={() =>
+                          this.setState({ color: !this.state.color })
+                        }
+                      >
+                        <Icon
+                          name={
+                            this.state.color ? "ios-heart" : "ios-heart-empty"
+                          }
+                          style={{ color: this.state.color ? "red" : "black" }}
+                        />
+                      </TouchableOpacity>
+                    </View>
+                    <View
+                      style={{
+                        width: "10%",
+                        height: 40,
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      <Icon
+                        name="message1"
+                        type="AntDesign"
+                        style={{ fontSize: 22 }}
+                      />
+                    </View>
+                  </View>
+                  <View style={{ paddingLeft: 10 }}>
+                    <Text style={{ fontWeight: "bold" }}>6 likes</Text>
+                  </View>
+                  <View style={{ paddingLeft: 10, width: "100%" }}>
+                    <Text>
+                      <Text style={{ fontWeight: "bold" }}>
+                        {item.username}
+                      </Text>{" "}
+                      {item.caption}
+                    </Text>
+                  </View>
+                  <View style={{ paddingLeft: 10 }}>
+                    <Text style={{ fontSize: 10, color: "gray" }}>
+                      38 minutes ago
+                    </Text>
+                  </View>
                 </View>
+                {/* feed footer ends */}
               </View>
-              <View style={{ paddingLeft: 10 }}>
-                <Text style={{ fontWeight: "bold" }}>6 likes</Text>
-              </View>
-              <View style={{ paddingLeft: 10 }}>
-                <Text style={{ fontSize: 10, color: "gray" }}>
-                  38 minutes ago
-                </Text>
-              </View>
-            </View>
-            {/* feed footer ends */}
-          </View>
+            )}
+          />
         )}
-      />
+      </View>
     );
   }
 }
