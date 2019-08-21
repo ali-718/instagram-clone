@@ -4,11 +4,21 @@ import { Text, View } from "react-native";
 import Feed from "./app/screens/feed";
 import Upload from "./app/screens/upload";
 import Profile from "./app/screens/profile";
+import { f, database, auth, storage } from "./config/config";
 
 export default class App extends Component {
   state = {
     activeTab: 0
   };
+
+  loginUser = async () => {
+    await auth.signInWithEmailAndPassword("test@test.com", "alihaider");
+  };
+
+  constructor() {
+    super();
+    this.loginUser();
+  }
 
   render() {
     return (
