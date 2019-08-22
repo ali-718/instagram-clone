@@ -1,7 +1,14 @@
 import React, { Component } from "react";
-import { Text, View, SafeAreaView, ScrollView, Image } from "react-native";
-import styles from "../../constants/styles";
-import { f, database, auth, storage } from "../../config/config";
+import {
+  Text,
+  View,
+  SafeAreaView,
+  ScrollView,
+  Image,
+  Platform
+} from "react-native";
+import styles from "../../../constants/styles";
+import { f, database, auth, storage } from "../../../config/config";
 import { Avatar, Button } from "react-native-elements";
 import { Grid, Row, Col } from "react-native-easy-grid";
 import { Icon } from "native-base";
@@ -9,7 +16,8 @@ import { Icon } from "native-base";
 export default class Profile extends Component {
   state = {
     isLogin: false,
-    isFollow: false
+    isFollow: false,
+    isMe: false
   };
 
   componentDidMount() {
@@ -42,11 +50,6 @@ export default class Profile extends Component {
               }}
             >
               {/* Profile header */}
-              <View
-                style={{ width: "90%", height: 30, alignItems: "flex-end" }}
-              >
-                <Icon name="ios-menu" style={{ fontSize: 20 }} />
-              </View>
               <View style={{ width: "90%", height: 100, flexDirection: "row" }}>
                 <View
                   style={{
@@ -79,7 +82,9 @@ export default class Profile extends Component {
                       style={{
                         width: "100%",
                         flexDirection: "row",
-                        marginTop: 10
+                        marginTop: 10,
+                        justifyContent: "center",
+                        alignItems: "center"
                       }}
                     >
                       <View style={{ width: "50%" }}>
@@ -88,7 +93,9 @@ export default class Profile extends Component {
                             onPress={() => this.setState({ isFollow: false })}
                             title="unfollow"
                             type="outline"
-                            style={{ width: "80%" }}
+                            style={{
+                              width: "90%"
+                            }}
                           />
                         </View>
                       </View>
@@ -97,18 +104,59 @@ export default class Profile extends Component {
                           <Button
                             title="message"
                             type="solid"
-                            style={{ width: "80%" }}
+                            style={{
+                              width: "90%"
+                            }}
                           />
                         </View>
                       </View>
                     </View>
+                  ) : this.state.isMe ? (
+                    <View
+                      style={{
+                        width: "80%",
+                        marginTop: 10,
+                        flexDirection: "row"
+                      }}
+                    >
+                      <View
+                        style={{
+                          width: "50%"
+                        }}
+                      >
+                        <Button
+                          title="Edit"
+                          type="solid"
+                          buttonStyle={{ width: "80%" }}
+                        />
+                      </View>
+                      <View
+                        style={{
+                          width: "50%"
+                        }}
+                      >
+                        <Button
+                          title="logout"
+                          type="solid"
+                          buttonStyle={{
+                            backgroundColor: "red",
+                            width: "80%"
+                          }}
+                        />
+                      </View>
+                    </View>
                   ) : (
-                    <View style={{ width: "80%", marginTop: 10 }}>
+                    <View
+                      style={{
+                        width: "80%",
+                        marginTop: 10
+                      }}
+                    >
                       <Button
                         onPress={() => this.setState({ isFollow: true })}
                         title="follow"
                         type="solid"
-                        style={{ width: "80%" }}
+                        buttonStyle={{ width: "100%" }}
                       />
                     </View>
                   )}

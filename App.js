@@ -1,12 +1,13 @@
 import React, { Component } from "react";
 import { Container, Header, Tab, Tabs, TabHeading, Icon } from "native-base";
 import { Text, View } from "react-native";
-import Feed from "./app/screens/feed";
-import Upload from "./app/screens/upload";
-import Profile from "./app/screens/profile";
+import Feed from "./app/screens/tabbar/feed";
+import Upload from "./app/screens/tabbar/upload";
+import Profile from "./app/screens/tabbar/profile";
 import { f, database, auth, storage } from "./config/config";
+import { createAppContainer, createStackNavigator } from "react-navigation";
 
-export default class App extends Component {
+class Tabbar extends Component {
   state = {
     activeTab: 0
   };
@@ -75,5 +76,28 @@ export default class App extends Component {
         </Tabs>
       </View>
     );
+  }
+}
+
+const Stack = createStackNavigator(
+  {
+    Home: {
+      screen: Tabbar
+    },
+    Profile: {
+      screen: Profile
+    }
+  },
+  {
+    headerMode: "none",
+    mode: "modal"
+  }
+);
+
+const MainStack = createAppContainer(Stack);
+
+export default class App extends Component {
+  render() {
+    return <MainStack />;
   }
 }

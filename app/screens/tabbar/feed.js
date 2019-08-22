@@ -10,11 +10,11 @@ import {
   ScrollView,
   FlatList
 } from "react-native";
-import styles from "../../constants/styles";
+import styles from "../../../constants/styles";
 import { Icon } from "native-base";
-import logo from "../../assets/Images/instagram.png";
-import Feeds from "../components/Feeds";
-import Face from "../../assets/Images/face.jpg";
+import logo from "../../../assets/Images/instagram.png";
+import Feeds from "../../components/Feeds";
+import Face from "../../../assets/Images/face.jpg";
 import { Avatar } from "react-native-elements";
 
 export default class Feed extends Component {

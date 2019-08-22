@@ -1,7 +1,7 @@
 import React, { Component } from "react";
 import { Text, View, SafeAreaView } from "react-native";
-import styles from "../../constants/styles";
-import { f, database, auth, storage } from "../../config/config";
+import styles from "../../../constants/styles";
+import { f, database, auth, storage } from "../../../config/config";
 
 export default class Upload extends Component {
   state = {
