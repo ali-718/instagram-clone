@@ -6,6 +6,8 @@ import Upload from "./app/screens/tabbar/upload";
 import Profile from "./app/screens/tabbar/profile";
 import { f, database, auth, storage } from "./config/config";
 import { createAppContainer, createStackNavigator } from "react-navigation";
+import UserProfile from "./app/screens/UserProfile";
+import Comments from "./app/screens/Comments";
 
 class Tabbar extends Component {
   state = {
@@ -41,7 +43,7 @@ class Tabbar extends Component {
               </TabHeading>
             }
           >
-            <Feed />
+            <Feed navigation={this.props.navigation} />
           </Tab>
           <Tab
             heading={
@@ -56,7 +58,7 @@ class Tabbar extends Component {
               </TabHeading>
             }
           >
-            <Upload />
+            <Upload navigation={this.props.navigation} />
           </Tab>
           <Tab
             heading={
@@ -71,7 +73,7 @@ class Tabbar extends Component {
               </TabHeading>
             }
           >
-            <Profile />
+            <Profile navigation={this.props.navigation} />
           </Tab>
         </Tabs>
       </View>
@@ -85,7 +87,10 @@ const Stack = createStackNavigator(
       screen: Tabbar
     },
     Profile: {
-      screen: Profile
+      screen: UserProfile
+    },
+    Comments: {
+      screen: Comments
     }
   },
   {

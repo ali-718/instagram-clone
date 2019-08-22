@@ -53,7 +53,8 @@ export default class Feeds extends Component {
                   caption: data.val().caption,
                   posted: that.timeConverter(data.val().posted),
                   avatar: childSnapshot.val().avatar,
-                  username: childSnapshot.val().username
+                  username: childSnapshot.val().username,
+                  userId: data.val().author
                 });
                 this.setState({
                   refresh: false,
@@ -137,7 +138,7 @@ export default class Feeds extends Component {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (
               <View
-                key={index}
+                key={item.userId}
                 style={{
                   width: "100%",
                   flex: 1,
@@ -155,7 +156,7 @@ export default class Feeds extends Component {
                     marginBottom: 15
                   }}
                 >
-                  <View
+                  <TouchableOpacity
                     style={{
                       width: "50%",
                       flex: 1,
@@ -163,8 +164,13 @@ export default class Feeds extends Component {
                       flexDirection: "row",
                       alignItems: "center"
                     }}
+                    onPress={() =>
+                      this.props.navigation.navigate("Profile", {
+                        Id: item.userId
+                      })
+                    }
                   >
-                    <TouchableOpacity
+                    <View
                       style={{
                         justifyContent: "center",
                         alignItems: "center",
@@ -176,11 +182,11 @@ export default class Feeds extends Component {
                       >
                         <Avatar rounded source={{ uri: item.avatar }} />
                       </View>
-                    </TouchableOpacity>
+                    </View>
                     <Text style={{ color: "black", fontWeight: "bold" }}>
                       {item.username}
                     </Text>
-                  </View>
+                  </TouchableOpacity>
                   <View
                     style={{
                       width: "50%",

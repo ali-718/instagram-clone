@@ -83,7 +83,7 @@ export default class Feed extends Component {
         {/* Header ends */}
 
         {/* content */}
-        <Feeds />
+        <Feeds navigation={this.props.navigation} />
       </SafeAreaView>
     );
   }
