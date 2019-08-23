@@ -129,8 +129,10 @@ export default class UserProfile extends Component {
                           width: "30%",
                           height: 20,
                           alignItems: "center",
-                          justifyContent: "center"
+                          justifyContent: "center",
+                          flexDirection: "row"
                         }}
+                        onPress={() => this.props.navigation.goBack()}
                       >
                         <View
                           style={{

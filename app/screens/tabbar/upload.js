@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, SafeAreaView } from "react-native";
+import { Text, View, SafeAreaView, Image } from "react-native";
 import styles from "../../../constants/styles";
 import { f, database, auth, storage } from "../../../config/config";
 
@@ -9,6 +9,7 @@ export default class Upload extends Component {
   };
 
   componentDidMount() {
+    auth.signOut();
     f.auth().onAuthStateChanged(user => {
       if (user) {
         console.log("logged in");
@@ -27,12 +28,31 @@ export default class Upload extends Component {
     return (
       <SafeAreaView style={styles.SafeArea}>
         <View
-          style={{ justifyContent: "center", alignItems: "center", flex: 1 }}
+          style={{
+            justifyContent: "center",
+            alignItems: "center",
+            flex: 1,
+            width: "100%"
+          }}
         >
           {this.state.isLogin == true ? (
             <Text> Upload Page </Text>
           ) : (
-            <View>
+            <View
+              style={{
+                justifyContent: "center",
+                alignItems: "center",
+                flex: 1,
+                width: "100%"
+              }}
+            >
+              <Image
+                source={{
+                  uri:
+                    "https://cdn.dribbble.com/users/2046015/screenshots/6015680/08_404.gif"
+                }}
+                style={{ width: "100%", height: 250 }}
+              />
               <Text> You are not logged in </Text>
               <Text> Please log in to upload photos </Text>
             </View>

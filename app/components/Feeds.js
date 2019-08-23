@@ -263,6 +263,9 @@ export default class Feeds extends Component {
                       }}
                     >
                       <Icon
+                        onPress={() =>
+                          this.props.navigation.navigate("Comments")
+                        }
                         name="message1"
                         type="AntDesign"
                         style={{ fontSize: 22 }}
