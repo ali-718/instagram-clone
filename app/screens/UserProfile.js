@@ -89,124 +89,124 @@ export default class UserProfile extends Component {
           </View>
         ) : (
           <ScrollView style={{ flex: 1 }}>
-            {this.state.isLogin == true ? (
+            <View
+              style={{
+                width: "100%",
+                flex: 1,
+                justifyContent: "center",
+                alignItems: "center"
+              }}
+            >
+              {/* Profile header */}
               <View
                 style={{
                   width: "100%",
-                  flex: 1,
+                  height: 50,
                   justifyContent: "center",
-                  alignItems: "center"
+                  elevation: 3,
+                  borderBottomWidth: Platform.OS == "ios" ? 0.2 : 0,
+                  borderBottomColor: "gainsboro",
+                  borderStyle: "solid"
                 }}
               >
-                {/* Profile header */}
                 <View
                   style={{
-                    width: "100%",
+                    width: "90%",
                     height: 50,
-                    justifyContent: "center",
-                    elevation: 3,
-                    borderBottomWidth: Platform.OS == "ios" ? 0.2 : 0,
-                    borderBottomColor: "gainsboro",
-                    borderStyle: "solid"
+                    justifyContent: "center"
                   }}
                 >
                   <View
                     style={{
-                      width: "90%",
-                      height: 50,
-                      justifyContent: "center"
+                      width: "100%",
+                      flexDirection: "row",
+                      height: 20
                     }}
                   >
-                    <View
+                    <TouchableOpacity
                       style={{
-                        width: "100%",
-                        flexDirection: "row",
-                        height: 20
+                        width: "30%",
+                        height: 20,
+                        alignItems: "center",
+                        justifyContent: "center",
+                        flexDirection: "row"
                       }}
+                      onPress={() => this.props.navigation.goBack()}
                     >
-                      <TouchableOpacity
+                      <View
                         style={{
                           width: "30%",
                           height: 20,
                           alignItems: "center",
-                          justifyContent: "center",
-                          flexDirection: "row"
+                          justifyContent: "center"
                         }}
-                        onPress={() => this.props.navigation.goBack()}
                       >
-                        <View
-                          style={{
-                            width: "30%",
-                            height: 20,
-                            alignItems: "center",
-                            justifyContent: "center"
-                          }}
-                        >
-                          <Icon
-                            name="arrowleft"
-                            type="AntDesign"
-                            style={{ fontSize: 20 }}
-                          />
-                        </View>
-                        <View
-                          style={{
-                            width: "70%",
-                            height: 20,
-                            justifyContent: "center"
-                          }}
-                        >
-                          <Text>Back</Text>
-                        </View>
-                      </TouchableOpacity>
+                        <Icon
+                          name="arrowleft"
+                          type="AntDesign"
+                          style={{ fontSize: 20 }}
+                        />
+                      </View>
                       <View
                         style={{
-                          width: "60%",
+                          width: "70%",
                           height: 20,
-                          justifyContent: "center",
-                          alignItems: "center"
+                          justifyContent: "center"
                         }}
                       >
-                        <Text>{this.state.user.id}</Text>
+                        <Text>Back</Text>
                       </View>
+                    </TouchableOpacity>
+                    <View
+                      style={{
+                        width: "60%",
+                        height: 20,
+                        justifyContent: "center",
+                        alignItems: "center"
+                      }}
+                    >
+                      <Text>{this.state.user.name}</Text>
                     </View>
                   </View>
                 </View>
+              </View>
+              <View
+                style={{
+                  width: "90%",
+                  height: 100,
+                  flexDirection: "row",
+                  marginTop: 20
+                }}
+              >
                 <View
                   style={{
-                    width: "90%",
+                    width: "30%",
                     height: 100,
-                    flexDirection: "row",
-                    marginTop: 20
+                    justifyContent: "center",
+                    alignItems: "flex-start"
                   }}
                 >
-                  <View
-                    style={{
-                      width: "30%",
-                      height: 100,
-                      justifyContent: "center",
-                      alignItems: "flex-start"
+                  <Avatar
+                    size="large"
+                    rounded
+                    source={{
+                      uri: this.state.user.avatar
                     }}
-                  >
-                    <Avatar
-                      size="large"
-                      rounded
-                      source={{
-                        uri: this.state.user.avatar
-                      }}
-                    />
-                  </View>
-                  <View
-                    style={{
-                      width: "70%",
-                      height: 100,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    <Text style={{ fontSize: 25 }}>
-                      {this.state.user.username}
-                    </Text>
-                    {this.state.isFollow ? (
+                  />
+                </View>
+                <View
+                  style={{
+                    width: "70%",
+                    height: 100,
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                >
+                  <Text style={{ fontSize: 25 }}>
+                    {this.state.user.username}
+                  </Text>
+                  {this.state.isLogin ? (
+                    this.state.isFollow ? (
                       <View
                         style={{
                           width: "100%",
@@ -254,254 +254,243 @@ export default class UserProfile extends Component {
                           buttonStyle={{ width: "100%" }}
                         />
                       </View>
-                    )}
-                  </View>
-                </View>
-                {/* Profile header ends */}
-                <View
-                  style={{
-                    width: "100%",
-                    flex: 1,
-                    marginTop: 40,
-                    alignItems: "center"
-                  }}
-                >
-                  <View style={{ width: "90%" }}>
-                    <Text style={{ fontWeight: "bold" }}>
-                      {this.state.user.name}
-                    </Text>
-                    <Text>I am a Mobile app and website developer</Text>
-                    <Text>The developer you need</Text>
-                    <Text>Trainer at Sir Syed University</Text>
-                    <Text>Former Trainer at NED</Text>
-                    <Text>React Enthusiast</Text>
-                  </View>
-                </View>
-                <View
-                  style={{
-                    width: "100%",
-                    flex: 1,
-                    padding: 5,
-                    marginTop: 20
-                  }}
-                >
-                  <Row style={{ width: "100%", flex: 1 }}>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                  </Row>
-                  <Row style={{ width: "100%", flex: 1 }}>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                  </Row>
-                  <Row style={{ width: "100%", flex: 1 }}>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                  </Row>
-                  <Row style={{ width: "100%", flex: 1 }}>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                  </Row>
-                  <Row style={{ width: "100%", flex: 1 }}>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                  </Row>
-                  <Row style={{ width: "100%", flex: 1 }}>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                  </Row>
-                  <Row style={{ width: "100%", flex: 1 }}>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                    <Col style={{ padding: 5 }}>
-                      <Image
-                        source={{
-                          uri:
-                            "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                        }}
-                        style={{ width: "100%", height: 100 }}
-                      />
-                    </Col>
-                  </Row>
+                    )
+                  ) : null}
                 </View>
               </View>
-            ) : (
+              {/* Profile header ends */}
               <View
                 style={{
-                  justifyContent: "center",
-                  alignItems: "center",
-                  flex: 1
+                  width: "100%",
+                  flex: 1,
+                  marginTop: 40,
+                  alignItems: "center"
                 }}
               >
-                <Text> You are not logged in </Text>
-                <Text> Please login to view your profile </Text>
+                <View style={{ width: "90%" }}>
+                  <Text style={{ fontWeight: "bold" }}>
+                    {this.state.user.name}
+                  </Text>
+                  <Text>I am a Mobile app and website developer</Text>
+                  <Text>The developer you need</Text>
+                  <Text>Trainer at Sir Syed University</Text>
+                  <Text>Former Trainer at NED</Text>
+                  <Text>React Enthusiast</Text>
+                </View>
               </View>
-            )}
+              <View
+                style={{
+                  width: "100%",
+                  flex: 1,
+                  padding: 5,
+                  marginTop: 20
+                }}
+              >
+                <Row style={{ width: "100%", flex: 1 }}>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                </Row>
+                <Row style={{ width: "100%", flex: 1 }}>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                </Row>
+                <Row style={{ width: "100%", flex: 1 }}>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                </Row>
+                <Row style={{ width: "100%", flex: 1 }}>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                </Row>
+                <Row style={{ width: "100%", flex: 1 }}>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                </Row>
+                <Row style={{ width: "100%", flex: 1 }}>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                </Row>
+                <Row style={{ width: "100%", flex: 1 }}>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                  <Col style={{ padding: 5 }}>
+                    <Image
+                      source={{
+                        uri:
+                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
+                      }}
+                      style={{ width: "100%", height: 100 }}
+                    />
+                  </Col>
+                </Row>
+              </View>
+            </View>
           </ScrollView>
         )}
       </SafeAreaView>

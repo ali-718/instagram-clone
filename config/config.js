@@ -5,7 +5,7 @@ var firebaseConfig = {
   authDomain: "photo-feed-80453.firebaseapp.com",
   databaseURL: "https://photo-feed-80453.firebaseio.com",
   projectId: "photo-feed-80453",
-  storageBucket: "",
+  storageBucket: "photo-feed-80453.appspot.com",
   messagingSenderId: "183762429987",
   appId: "1:183762429987:web:1c8e8b421b20ded4"
 };

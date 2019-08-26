@@ -145,7 +145,6 @@ export default class Feeds extends Component {
                   backgroundColor: "white"
                 }}
               >
-                {console.log(this.state)}
                 {/* Feed header */}
                 <View
                   style={{
