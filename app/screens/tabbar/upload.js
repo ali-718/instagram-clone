@@ -5,7 +5,8 @@ import {
   SafeAreaView,
   Image,
   ActivityIndicator,
-  TextInput
+  TextInput,
+  KeyboardAvoidingView
 } from "react-native";
 import styles from "../../../constants/styles";
 import { f, database, auth, storage } from "../../../config/config";
@@ -22,7 +23,9 @@ export default class Upload extends Component {
     ImageId: null,
     ImageSelected: false,
     ImageUri: "",
-    Caption: ""
+    Caption: "",
+    uploading: false,
+    progress: 0
   };
 
   checkPermissions() {
@@ -77,20 +80,14 @@ export default class Upload extends Component {
       aspect: [4, 3]
     });
 
-    this.setState({
-      isLoading: true
-    });
-
     if (!result.cancelled) {
       this.setState({
         ImageSelected: true,
-        ImageUri: result.uri,
-        isLoading: false
+        ImageUri: result.uri
       });
     } else {
       console.log("cancelled");
       this.setState({
-        isLoading: false,
         ImageSelected: false
       });
     }
@@ -101,24 +98,63 @@ export default class Upload extends Component {
     const imageId = this.state.ImageId;
     const type = uri.split(".").pop();
 
+    this.setState({
+      uploading: true
+    });
+
     const response = await fetch(uri);
     const Blob = await response.blob();
 
     console.log(Blob);
     let FilePath = imageId + "." + type;
 
-    let ref = storage.ref(`/users/${userId}/images`).child(FilePath);
+    let uploadRef = storage
+      .ref(`/users/${userId}/images`)
+      .child(FilePath)
+      .put(Blob);
 
-    ref.put(Blob).on(
+    uploadRef.on(
       "state_changed",
       snapshot => {
-        this.setState({
-          isLoading: false
-        });
-        console.log("done");
+        let progress = (
+          (snapshot.bytesTransferred / snapshot.totalBytes) *
+          100
+        ).toFixed(0);
+
+        this.setState({ progress });
       },
-      e => console.log(e)
+      () => console.log(e),
+      final => {
+        this.setState({
+          progress: 100,
+          uploading: false,
+          ImageSelected: false,
+          Caption: "",
+          ImageId: null
+        });
+        uploadRef.snapshot.ref.getDownloadURL().then(download => {
+          alert(download);
+        });
+      }
     );
+  };
+
+  publishPost = () => {
+    let caption = this.state.Caption.trim();
+    if (caption.length > 0) {
+      this.uploadImage(this.state.ImageUri);
+    } else {
+      alert("Caption is required");
+    }
+  };
+
+  cancelButton = () => {
+    this.setState({
+      ImageId: null,
+      ImageSelected: false,
+      ImageUri: "",
+      Caption: ""
+    });
   };
 
   componentDidMount() {
@@ -148,7 +184,9 @@ export default class Upload extends Component {
     return (
       <SafeAreaView style={styles.SafeArea}>
         {this.state.isLoading === false ? (
-          <View
+          <KeyboardAvoidingView
+            enabled={true}
+            behavior="padding"
             style={{
               justifyContent: "center",
               alignItems: "center",
@@ -194,7 +232,25 @@ export default class Upload extends Component {
                         marginTop: 20
                       }}
                       maxLength={150}
+                      onChangeText={val => this.setState({ Caption: val })}
                     />
+                    <View
+                      style={{
+                        width: "100%",
+                        justifyContent: "center",
+                        alignItems: "center",
+                        marginTop: 20
+                      }}
+                    >
+                      {this.state.uploading ? (
+                        <View>
+                          <Text>{this.state.progress}%</Text>
+                          {this.state.progress !== 100 ? (
+                            <ActivityIndicator />
+                          ) : null}
+                        </View>
+                      ) : null}
+                    </View>
                     <View
                       style={{
                         width: "80%",
@@ -216,6 +272,7 @@ export default class Upload extends Component {
                             alignItems: "center"
                           }}
                           title="Cancel"
+                          onPress={() => this.cancelButton()}
                         />
                       </View>
                       <View
@@ -230,7 +287,8 @@ export default class Upload extends Component {
                             justifyContent: "center",
                             alignItems: "center"
                           }}
-                          title="Upload"
+                          title="Publish"
+                          onPress={() => this.publishPost()}
                         />
                       </View>
                     </View>
@@ -272,7 +330,7 @@ export default class Upload extends Component {
                 <Text> Please log in to upload photos </Text>
               </View>
             )}
-          </View>
+          </KeyboardAvoidingView>
         ) : (
           <View
             style={{
