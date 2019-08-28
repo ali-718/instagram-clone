@@ -83,7 +83,8 @@ export default class Upload extends Component {
     if (!result.cancelled) {
       this.setState({
         ImageSelected: true,
-        ImageUri: result.uri
+        ImageUri: result.uri,
+        ImageId: this.uniqueId()
       });
     } else {
       console.log("cancelled");
@@ -125,36 +126,73 @@ export default class Upload extends Component {
       },
       () => console.log(e),
       final => {
-        this.setState({
-          progress: 100,
-          uploading: false,
-          ImageSelected: false,
-          Caption: "",
-          ImageId: null
-        });
         uploadRef.snapshot.ref.getDownloadURL().then(download => {
-          alert(download);
+          this.uploadProcess(download, this.state.Caption);
         });
       }
     );
   };
 
+  uploadProcess = (url, caption) => {
+    let author = f.auth().currentUser.uid;
+    let posted = Math.floor(Date.now() / 1000);
+
+    const uploadData = {
+      author,
+      caption,
+      posted,
+      url
+    };
+
+    database
+      .ref("photos")
+      .child(this.state.ImageId)
+      .set(uploadData);
+
+    database
+      .ref("users")
+      .child(author)
+      .child("photos")
+      .child(this.state.ImageId)
+      .set(uploadData);
+
+    this.setState({
+      progress: 100,
+      uploading: false,
+      ImageSelected: false,
+      Caption: "",
+      ImageId: null
+    });
+
+    console.log(uploadData);
+  };
+
   publishPost = () => {
-    let caption = this.state.Caption.trim();
-    if (caption.length > 0) {
-      this.uploadImage(this.state.ImageUri);
+    if (!this.state.uploading) {
+      let caption = this.state.Caption.trim();
+      if (caption.length > 0) {
+        this.uploadImage(this.state.ImageUri);
+      } else {
+        alert("Caption is required");
+      }
     } else {
-      alert("Caption is required");
+      console.log("ignore this message");
     }
   };
 
   cancelButton = () => {
-    this.setState({
-      ImageId: null,
-      ImageSelected: false,
-      ImageUri: "",
-      Caption: ""
-    });
+    if (!this.state.uploading) {
+      this.setState({
+        ImageId: null,
+        ImageSelected: false,
+        ImageUri: "",
+        Caption: "",
+        uploading: false,
+        progress: 0
+      });
+    } else {
+      null;
+    }
   };
 
   componentDidMount() {
@@ -174,10 +212,6 @@ export default class Upload extends Component {
           isLoading: false
         });
       }
-    });
-
-    this.setState({
-      ImageId: this.uniqueId()
     });
   }
   render() {

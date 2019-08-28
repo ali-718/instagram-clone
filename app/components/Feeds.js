@@ -217,7 +217,7 @@ export default class Feeds extends Component {
                   source={{
                     uri: item.url
                   }}
-                  style={{ width: "100%", height: 250, resizeMode: "cover" }}
+                  style={{ width: "100%", height: 300, resizeMode: "cover" }}
                 />
                 {/* feed image ends */}
 
