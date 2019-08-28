@@ -36,8 +36,7 @@ export default class Profile extends Component {
         this.loadNew();
         console.log("logged in");
         this.setState({
-          isLogin: true,
-          isLoading: false
+          isLogin: true
         });
       } else {
         console.log("logged out");
@@ -54,7 +53,13 @@ export default class Profile extends Component {
       .ref("users")
       .child(f.auth().currentUser.uid)
       .once("value", snapshot => {
-        console.log(snapshot.val());
+        this.setState({
+          userAvatar: snapshot.val().avatar,
+          userName: snapshot.val().username,
+          userRealName: snapshot.val().name,
+          email: snapshot.val().email,
+          isLoading: false
+        });
       });
   };
 
@@ -114,8 +119,7 @@ export default class Profile extends Component {
                       size="large"
                       rounded
                       source={{
-                        uri:
-                          "https://scontent.fkhi10-1.fna.fbcdn.net/v/t1.0-1/c1.0.240.240a/p240x240/67153135_2450461055175994_1461370675527680000_n.jpg?_nc_cat=102&_nc_oc=AQmMILF38wL80ID6os5nifDsPKLVomU2hY96NM6Nnp6dJ0l3yPw-t39_85b2jfKWhp8&_nc_ht=scontent.fkhi10-1.fna&oh=61eaa2974f1ed742670d392dff34e1db&oe=5DDDF953"
+                        uri: this.state.userAvatar
                       }}
                     />
                   </View>
@@ -127,7 +131,7 @@ export default class Profile extends Component {
                       alignItems: "center"
                     }}
                   >
-                    <Text style={{ fontSize: 25 }}>Ali Haider</Text>
+                    <Text style={{ fontSize: 25 }}>{this.state.userName}</Text>
                     {this.state.isFollow ? (
                       <View
                         style={{
@@ -223,7 +227,9 @@ export default class Profile extends Component {
                   }}
                 >
                   <View style={{ width: "90%" }}>
-                    <Text style={{ fontWeight: "bold" }}>Ali Haider</Text>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {this.state.userRealName}
+                    </Text>
                     <Text>I am a Mobile app and website developer</Text>
                     <Text>The developer you need</Text>
                     <Text>Trainer at Sir Syed University</Text>
