@@ -5,208 +5,227 @@ import {
   SafeAreaView,
   ScrollView,
   Image,
-  Platform,
+  Dimensions,
   ActivityIndicator,
+  FlatList,
+  RefreshControl,
+  Platform,
   TouchableOpacity
 } from "react-native";
 import styles from "../../constants/styles";
 import { f, database, auth, storage } from "../../config/config";
 import { Avatar, Button } from "react-native-elements";
 import { Grid, Row, Col } from "react-native-easy-grid";
-import { Icon, Header } from "native-base";
+import { Icon } from "native-base";
 
 export default class UserProfile extends Component {
   state = {
     isLogin: false,
     isFollow: false,
+    isMe: false,
     isLoading: true,
-    user: {}
+    imagesData: [],
+    refresh: false,
+    userName: "",
+    userAvatar: "",
+    userRealName: "",
+    isImageLoading: true
   };
 
   componentDidMount() {
     f.auth().onAuthStateChanged(user => {
       if (user) {
         console.log("logged in");
+        const clickedUser = this.props.navigation.getParam("Id");
+
+        if (clickedUser === f.auth().currentUser.uid) {
+          this.setState({
+            isMe: true
+          });
+        }
+        this.userFetchData();
+        this.loadNew();
         this.setState({
           isLogin: true
         });
       } else {
         console.log("logged out");
         this.setState({
-          isLogin: false
+          isLogin: false,
+          isLoading: false
         });
       }
     });
-
-    this.checkParams();
   }
 
-  checkParams = () => {
-    const params = this.props.navigation.getParam("Id");
-
-    if (params) {
-      this.fetchUserInfo(params);
-    } else {
-      this.props.navigation.goBack();
-    }
-  };
-
-  fetchUserInfo = userID => {
+  userFetchData = () => {
+    const selectedId = this.props.navigation.getParam("Id");
     database
       .ref("users")
-      .child(userID)
-      .once("value")
-      .then(snapshot => {
-        const exist = snapshot.val() !== null;
-
-        if (exist) {
-          this.setState({
-            user: { ...snapshot.val(), id: snapshot.key },
-            isLoading: false
-          });
-        } else {
-          this.props.navigation.goBack();
-        }
-      })
-      .catch(e => {
-        this.props.navigation.goBack();
+      .child(selectedId)
+      .once("value", snapshot => {
+        this.setState({
+          userAvatar: snapshot.val().avatar,
+          userName: snapshot.val().username,
+          userRealName: snapshot.val().name,
+          email: snapshot.val().email,
+          isLoading: false
+        });
       });
+  };
+
+  loadNew = () => {
+    const selectedId = this.props.navigation.getParam("Id");
+
+    this.setState({
+      refresh: true,
+      isImageLoading: true,
+      imagesData: []
+    });
+    database
+      .ref("users")
+      .child(selectedId)
+      .child("photos")
+      .once("value", res => {
+        res.forEach(snapshot => {
+          this.state.imagesData.push({ id: snapshot.key, ...snapshot.val() });
+          this.setState({
+            refresh: false,
+            isImageLoading: false
+          });
+        });
+      });
+  };
+
+  refreshing = () => {
+    this.loadNew();
   };
 
   render() {
     return (
       <SafeAreaView style={styles.SafeArea}>
-        {this.state.isLoading ? (
-          <View
-            style={{
-              width: "100%",
-              flex: 1,
-              justifyContent: "center",
-              alignItems: "center"
-            }}
+        {this.state.isLoading === false ? (
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refresh}
+                onRefresh={() => this.refreshing()}
+              />
+            }
+            style={{ flex: 1 }}
           >
-            <ActivityIndicator size="large" />
-          </View>
-        ) : (
-          <ScrollView style={{ flex: 1 }}>
-            <View
-              style={{
-                width: "100%",
-                flex: 1,
-                justifyContent: "center",
-                alignItems: "center"
-              }}
-            >
-              {/* Profile header */}
+            {this.state.isLogin == true ? (
               <View
                 style={{
                   width: "100%",
-                  height: 50,
+                  flex: 1,
                   justifyContent: "center",
-                  elevation: 3,
-                  borderBottomWidth: Platform.OS == "ios" ? 0.2 : 0,
-                  borderBottomColor: "gainsboro",
-                  borderStyle: "solid"
+                  alignItems: "center"
                 }}
               >
+                {/* Profile header */}
                 <View
                   style={{
-                    width: "90%",
+                    width: "100%",
                     height: 50,
-                    justifyContent: "center"
+                    justifyContent: "center",
+                    elevation: 3,
+                    borderBottomWidth: Platform.OS == "ios" ? 0.2 : 0,
+                    borderBottomColor: "gainsboro",
+                    borderStyle: "solid"
                   }}
                 >
                   <View
                     style={{
-                      width: "100%",
-                      flexDirection: "row",
-                      height: 20
+                      width: "90%",
+                      height: 50,
+                      justifyContent: "center"
                     }}
                   >
-                    <TouchableOpacity
+                    <View
                       style={{
-                        width: "30%",
-                        height: 20,
-                        alignItems: "center",
-                        justifyContent: "center",
-                        flexDirection: "row"
+                        width: "100%",
+                        flexDirection: "row",
+                        height: 20
                       }}
-                      onPress={() => this.props.navigation.goBack()}
                     >
-                      <View
+                      <TouchableOpacity
                         style={{
                           width: "30%",
                           height: 20,
                           alignItems: "center",
-                          justifyContent: "center"
+                          justifyContent: "center",
+                          flexDirection: "row"
                         }}
+                        onPress={() => this.props.navigation.goBack()}
                       >
-                        <Icon
-                          name="arrowleft"
-                          type="AntDesign"
-                          style={{ fontSize: 20 }}
-                        />
-                      </View>
+                        <View
+                          style={{
+                            width: "30%",
+                            height: 20,
+                            alignItems: "center",
+                            justifyContent: "center"
+                          }}
+                        >
+                          <Icon
+                            name="arrowleft"
+                            type="AntDesign"
+                            style={{ fontSize: 20 }}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            width: "70%",
+                            height: 20,
+                            justifyContent: "center"
+                          }}
+                        >
+                          <Text>Back</Text>
+                        </View>
+                      </TouchableOpacity>
                       <View
                         style={{
-                          width: "70%",
+                          width: "60%",
                           height: 20,
-                          justifyContent: "center"
+                          justifyContent: "center",
+                          alignItems: "center"
                         }}
                       >
-                        <Text>Back</Text>
+                        <Text>{this.state.userRealName}</Text>
                       </View>
-                    </TouchableOpacity>
-                    <View
-                      style={{
-                        width: "60%",
-                        height: 20,
-                        justifyContent: "center",
-                        alignItems: "center"
-                      }}
-                    >
-                      <Text>{this.state.user.name}</Text>
                     </View>
                   </View>
                 </View>
-              </View>
-              <View
-                style={{
-                  width: "90%",
-                  height: 100,
-                  flexDirection: "row",
-                  marginTop: 20
-                }}
-              >
                 <View
-                  style={{
-                    width: "30%",
-                    height: 100,
-                    justifyContent: "center",
-                    alignItems: "flex-start"
-                  }}
+                  style={{ width: "90%", height: 100, flexDirection: "row" }}
                 >
-                  <Avatar
-                    size="large"
-                    rounded
-                    source={{
-                      uri: this.state.user.avatar
+                  <View
+                    style={{
+                      width: "30%",
+                      height: 150,
+                      justifyContent: "center",
+                      alignItems: "flex-start"
                     }}
-                  />
-                </View>
-                <View
-                  style={{
-                    width: "70%",
-                    height: 100,
-                    justifyContent: "center",
-                    alignItems: "center"
-                  }}
-                >
-                  <Text style={{ fontSize: 25 }}>
-                    {this.state.user.username}
-                  </Text>
-                  {this.state.isLogin ? (
-                    this.state.isFollow ? (
+                  >
+                    {console.log(this.state)}
+                    <Avatar
+                      size="large"
+                      rounded
+                      source={{
+                        uri: this.state.userAvatar
+                      }}
+                    />
+                  </View>
+                  <View
+                    style={{
+                      width: "70%",
+                      height: 150,
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    <Text style={{ fontSize: 25 }}>{this.state.userName}</Text>
+                    {this.state.isFollow ? (
                       <View
                         style={{
                           width: "100%",
@@ -240,6 +259,40 @@ export default class UserProfile extends Component {
                           </View>
                         </View>
                       </View>
+                    ) : this.state.isMe ? (
+                      <View
+                        style={{
+                          width: "80%",
+                          marginTop: 10,
+                          flexDirection: "row"
+                        }}
+                      >
+                        <View
+                          style={{
+                            width: "50%"
+                          }}
+                        >
+                          <Button
+                            title="Edit"
+                            type="solid"
+                            buttonStyle={{ width: "80%" }}
+                          />
+                        </View>
+                        <View
+                          style={{
+                            width: "50%"
+                          }}
+                        >
+                          <Button
+                            title="logout"
+                            type="solid"
+                            buttonStyle={{
+                              backgroundColor: "red",
+                              width: "80%"
+                            }}
+                          />
+                        </View>
+                      </View>
                     ) : (
                       <View
                         style={{
@@ -254,244 +307,97 @@ export default class UserProfile extends Component {
                           buttonStyle={{ width: "100%" }}
                         />
                       </View>
-                    )
-                  ) : null}
+                    )}
+                  </View>
+                </View>
+                {/* Profile header ends */}
+                <View
+                  style={{
+                    width: "100%",
+                    flex: 1,
+                    marginTop: 40,
+                    alignItems: "center"
+                  }}
+                >
+                  <View style={{ width: "90%" }}>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {this.state.userRealName}
+                    </Text>
+                    <Text>I am a Mobile app and website developer</Text>
+                    <Text>The developer you need</Text>
+                    <Text>Trainer at Sir Syed University</Text>
+                    <Text>Former Trainer at NED</Text>
+                    <Text>React Enthusiast</Text>
+                  </View>
+                </View>
+                <View
+                  style={{
+                    width: "100%",
+                    flex: 1,
+                    padding: 5,
+                    marginTop: 20
+                  }}
+                >
+                  <View
+                    style={{
+                      width: "100%",
+                      flex: 1,
+                      justifyContent: "center",
+                      alignItems: "center"
+                    }}
+                  >
+                    {this.state.isImageLoading ? (
+                      <ActivityIndicator />
+                    ) : (
+                      <FlatList
+                        style={{ flex: 1, width: "100%" }}
+                        data={this.state.imagesData}
+                        numColumns={3}
+                        renderItem={({ item }) => (
+                          <View key={item.id} style={{ margin: 5 }}>
+                            <Image
+                              source={{ uri: item.url }}
+                              style={{ width: 100, height: 100 }}
+                            />
+                          </View>
+                        )}
+                      />
+                    )}
+                  </View>
                 </View>
               </View>
-              {/* Profile header ends */}
+            ) : (
               <View
                 style={{
-                  width: "100%",
-                  flex: 1,
-                  marginTop: 40,
-                  alignItems: "center"
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: Dimensions.get("window").height,
+                  width: "100%"
                 }}
               >
-                <View style={{ width: "90%" }}>
-                  <Text style={{ fontWeight: "bold" }}>
-                    {this.state.user.name}
-                  </Text>
-                  <Text>I am a Mobile app and website developer</Text>
-                  <Text>The developer you need</Text>
-                  <Text>Trainer at Sir Syed University</Text>
-                  <Text>Former Trainer at NED</Text>
-                  <Text>React Enthusiast</Text>
-                </View>
+                <Image
+                  source={{
+                    uri:
+                      "https://cdn.dribbble.com/users/2046015/screenshots/6015680/08_404.gif"
+                  }}
+                  style={{ width: "100%", height: 250 }}
+                />
+                <Text> You are not logged in </Text>
+                <Text> Please log in to see his/her profile </Text>
               </View>
-              <View
-                style={{
-                  width: "100%",
-                  flex: 1,
-                  padding: 5,
-                  marginTop: 20
-                }}
-              >
-                <Row style={{ width: "100%", flex: 1 }}>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                </Row>
-                <Row style={{ width: "100%", flex: 1 }}>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                </Row>
-                <Row style={{ width: "100%", flex: 1 }}>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                </Row>
-                <Row style={{ width: "100%", flex: 1 }}>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                </Row>
-                <Row style={{ width: "100%", flex: 1 }}>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                </Row>
-                <Row style={{ width: "100%", flex: 1 }}>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                </Row>
-                <Row style={{ width: "100%", flex: 1 }}>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                  <Col style={{ padding: 5 }}>
-                    <Image
-                      source={{
-                        uri:
-                          "https://images.unsplash.com/photo-1556911220-bff31c812dba?ixlib=rb-1.2.1&ixid=eyJhcHBfaWQiOjEyMDd9&auto=format&fit=crop&w=1135&q=80"
-                      }}
-                      style={{ width: "100%", height: 100 }}
-                    />
-                  </Col>
-                </Row>
-              </View>
-            </View>
+            )}
           </ScrollView>
+        ) : (
+          <View
+            style={{
+              justifyContent: "center",
+              alignItems: "center",
+              flex: 1,
+              width: "100%"
+            }}
+          >
+            <ActivityIndicator size="large" />
+          </View>
         )}
       </SafeAreaView>
     );

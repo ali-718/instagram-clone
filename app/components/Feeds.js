@@ -36,7 +36,6 @@ export default class Feeds extends Component {
 
     database
       .ref("photos")
-      .orderByChild("posted")
       .once("value")
       .then(snapshot => {
         const exist = snapshot.val() !== null;
@@ -138,7 +137,7 @@ export default class Feeds extends Component {
             keyExtractor={(item, index) => index.toString()}
             renderItem={({ item, index }) => (
               <View
-                key={item.userId}
+                key={item.id}
                 style={{
                   width: "100%",
                   flex: 1,
@@ -263,7 +262,9 @@ export default class Feeds extends Component {
                     >
                       <Icon
                         onPress={() =>
-                          this.props.navigation.navigate("Comments")
+                          this.props.navigation.navigate("Comments", {
+                            photoId: item.id
+                          })
                         }
                         name="message1"
                         type="AntDesign"
