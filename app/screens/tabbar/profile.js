@@ -7,7 +7,8 @@ import {
   Image,
   Dimensions,
   ActivityIndicator,
-  FlatList
+  FlatList,
+  RefreshControl
 } from "react-native";
 import styles from "../../../constants/styles";
 import { f, database, auth, storage } from "../../../config/config";
@@ -92,7 +93,15 @@ export default class Profile extends Component {
     return (
       <SafeAreaView style={styles.SafeArea}>
         {this.state.isLoading === false ? (
-          <ScrollView style={{ flex: 1 }}>
+          <ScrollView
+            refreshControl={
+              <RefreshControl
+                refreshing={this.state.refresh}
+                onRefresh={() => this.refreshing()}
+              />
+            }
+            style={{ flex: 1 }}
+          >
             {this.state.isLogin == true ? (
               <View
                 style={{
@@ -258,9 +267,7 @@ export default class Profile extends Component {
                     ) : (
                       <FlatList
                         style={{ flex: 1, width: "100%" }}
-                        onRefresh={() => this.refreshing()}
                         data={this.state.imagesData}
-                        refreshing={this.state.refresh}
                         numColumns={3}
                         renderItem={({ item }) => (
                           <View key={item.id} style={{ margin: 5 }}>
