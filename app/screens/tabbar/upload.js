@@ -6,13 +6,15 @@ import {
   Image,
   ActivityIndicator,
   TextInput,
-  KeyboardAvoidingView
+  KeyboardAvoidingView,
+  Platform
 } from "react-native";
 import styles from "../../../constants/styles";
 import { f, database, auth, storage } from "../../../config/config";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import { Button } from "react-native-elements";
+import { Textarea } from "native-base";
 
 export default class Upload extends Component {
   state = {
@@ -106,7 +108,6 @@ export default class Upload extends Component {
     const response = await fetch(uri);
     const Blob = await response.blob();
 
-    console.log(Blob);
     let FilePath = imageId + "." + type;
 
     let uploadRef = storage
@@ -141,7 +142,8 @@ export default class Upload extends Component {
       author,
       caption,
       posted,
-      url
+      url,
+      likes: 0
     };
 
     database
@@ -163,8 +165,6 @@ export default class Upload extends Component {
       Caption: "",
       ImageId: null
     });
-
-    console.log(uploadData);
   };
 
   publishPost = () => {
@@ -251,10 +251,19 @@ export default class Upload extends Component {
                       source={{ uri: this.state.ImageUri }}
                       style={{ width: "100%", height: 300 }}
                     />
-                    <TextInput
+                    {console.log(this.state)}
+                    <Textarea
+                      style={{ width: "100%", marginTop: 20 }}
+                      rowSpan={5}
+                      bordered
+                      placeholder="Enter caption...!"
+                      onChangeText={val => this.setState({ Caption: val })}
+                    />
+                    {/* <TextInput
                       multiline={true}
                       numberOfLines={5}
                       editable={true}
+                      maxLength={200}
                       placeholder={"Enter caption...!"}
                       style={{
                         width: "100%",
@@ -267,7 +276,7 @@ export default class Upload extends Component {
                       }}
                       maxLength={150}
                       onChangeText={val => this.setState({ Caption: val })}
-                    />
+                    /> */}
                     <View
                       style={{
                         width: "100%",

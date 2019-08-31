@@ -47,57 +47,78 @@ export default class Comments extends Component {
   }
 
   commentsQuery = () => {
-    return new Promise((resolve, reject) => {
-      database
-        .ref("comments")
-        .child(this.props.navigation.getParam("photoId"))
-        .orderByChild("posted")
-        .once("value")
-        .then(snapshot => {
-          const exist = snapshot.val() !== null;
+    database
+      .ref("comments")
+      .child(this.props.navigation.getParam("photoId"))
+      .orderByChild("posted")
+      .once("value")
+      .then(snapshot => {
+        snapshot.forEach(item => {
+          database
+            .ref("users")
+            .child(item.val().author)
+            .once("value")
+            .then(childSnapshot => {
+              this.state.commentsData.push({
+                userId: childSnapshot.key,
+                userAvatar: childSnapshot.val().avatar,
+                userName: childSnapshot.val().username,
+                posted: item.val().posted,
+                comment: item.val().comment,
+                id: item.key
+              });
 
-          if (!exist) {
-            reject(false);
-          }
-          snapshot.forEach(item => {
-            database
-              .ref("users")
-              .child(item.val().author)
-              .once("value")
-              .then(childSnapshot => {
-                this.state.commentsData.push({
-                  userId: childSnapshot.key,
-                  userAvatar: childSnapshot.val().avatar,
-                  userName: childSnapshot.val().username,
-                  posted: item.val().posted,
-                  comment: item.val().comment,
-                  id: item.key
-                });
-
-                this.setState({
-                  isLoading: false,
-                  refresh: false
-                });
-                resolve(true);
-              })
-              .catch(() => console.log("no comments"));
-          });
+              this.setState({
+                isLoading: false,
+                refresh: false
+              });
+            });
         });
-    });
+      });
   };
 
   fetchComments = () => {
-    this.commentsQuery().catch(() => {
-      if (this.state.commentsData.length === 0) {
-        this.setState({
-          isLoading: false,
-          refresh: false
-        });
-      }
+    this.setState({
+      isLoading: true
     });
+
+    database
+      .ref("comments")
+      .child(this.props.navigation.getParam("photoId"))
+      .orderByChild("posted")
+      .once("value")
+      .then(snapshot => {
+        snapshot.forEach(item => {
+          database
+            .ref("users")
+            .child(item.val().author)
+            .once("value")
+            .then(childSnapshot => {
+              this.state.commentsData.push({
+                userId: childSnapshot.key,
+                userAvatar: childSnapshot.val().avatar,
+                userName: childSnapshot.val().username,
+                posted: item.val().posted,
+                comment: item.val().comment,
+                id: item.key
+              });
+
+              this.setState({
+                isLoading: false,
+                refresh: false
+              });
+            });
+        });
+      });
+
+    if (this.state.commentsData.length === 0) {
+      this.setState({
+        isLoading: false
+      });
+    }
   };
 
-  postComments = (comment, username, avatar) => {
+  postComments = comment => {
     this.setState({
       commentsData: [],
       userComment: ""
@@ -114,15 +135,14 @@ export default class Comments extends Component {
         posted: posted
       })
       .then(() => {
-        this.commentsQuery();
+        this.fetchComments();
       });
   };
 
   refreshControl = () => {
     this.setState({
       refresh: true,
-      commentsData: [],
-      isLoading: true
+      commentsData: []
     });
     this.commentsQuery();
   };
@@ -131,7 +151,7 @@ export default class Comments extends Component {
     return (
       <SafeAreaView style={styles.SafeArea}>
         {console.log(this.state)}
-        {this.state.isLoading === true ? (
+        {this.state.isLoading ? (
           <View
             style={{
               width: "100%",
@@ -227,77 +247,63 @@ export default class Comments extends Component {
                   </View>
                 </View>
                 {/* comments header ends */}
-                {this.state.isLoading ? (
-                  <View
-                    style={{
-                      width: "100%",
-                      flex: 1,
-                      justifyContent: "center",
-                      alignItems: "center"
-                    }}
-                  >
-                    <ActivityIndicator size="large" />
-                  </View>
-                ) : (
-                  <ScrollView
-                    showsVerticalScrollIndicator={false}
-                    refreshControl={
-                      <RefreshControl
-                        refreshing={this.state.refresh}
-                        onRefresh={() => this.refreshControl()}
-                      />
-                    }
-                    style={{ width: "100%", flex: 1 }}
-                  >
-                    {this.state.commentsData.length > 0
-                      ? this.state.commentsData.map(item => (
+                <ScrollView
+                  showsVerticalScrollIndicator={false}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={this.state.refresh}
+                      onRefresh={() => this.refreshControl()}
+                    />
+                  }
+                  style={{ width: "100%", flex: 1 }}
+                >
+                  {this.state.commentsData.length > 0
+                    ? this.state.commentsData.map(item => (
+                        <View
+                          style={{
+                            width: "100%",
+                            flexDirection: "row",
+                            marginTop: 10,
+                            padding: 10
+                          }}
+                          key={item.id}
+                        >
                           <View
                             style={{
-                              width: "100%",
-                              flexDirection: "row",
-                              marginTop: 10,
+                              width: "15%",
+                              justifyContent: "center",
+                              alignItems: "center"
+                            }}
+                          >
+                            <Avatar
+                              size="medium"
+                              rounded
+                              source={{
+                                uri: item.userAvatar
+                              }}
+                            />
+                          </View>
+                          <View
+                            style={{
+                              width: "85%",
+                              justifyContent: "center",
+                              alignItems: "center",
                               padding: 10
                             }}
-                            key={item.id}
                           >
-                            <View
-                              style={{
-                                width: "15%",
-                                justifyContent: "center",
-                                alignItems: "center"
-                              }}
-                            >
-                              <Avatar
-                                size="medium"
-                                rounded
-                                source={{
-                                  uri: item.userAvatar
-                                }}
-                              />
+                            <View style={{ width: "100%" }}>
+                              <Text style={{ fontWeight: "bold" }}>
+                                {item.userName}
+                              </Text>
                             </View>
-                            <View
-                              style={{
-                                width: "85%",
-                                justifyContent: "center",
-                                alignItems: "center",
-                                padding: 10
-                              }}
-                            >
-                              <View style={{ width: "100%" }}>
-                                <Text style={{ fontWeight: "bold" }}>
-                                  {item.userName}
-                                </Text>
-                              </View>
-                              <View style={{ width: "100%", marginTop: 10 }}>
-                                <Text>{item.comment}</Text>
-                              </View>
+                            <View style={{ width: "100%", marginTop: 10 }}>
+                              <Text>{item.comment}</Text>
                             </View>
                           </View>
-                        ))
-                      : null}
-                  </ScrollView>
-                )}
-
+                        </View>
+                      ))
+                    : null}
+                </ScrollView>
                 <View
                   style={{
                     width: "100%",

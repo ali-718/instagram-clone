@@ -23,6 +23,10 @@ class Tabbar extends Component {
     this.loginUser();
   }
 
+  componentDidMount() {
+    console.disableYellowBox = true;
+  }
+
   render() {
     return (
       <View style={{ flex: 1 }}>

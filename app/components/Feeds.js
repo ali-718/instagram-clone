@@ -26,6 +26,41 @@ export default class Feeds extends Component {
     this.loadFeed();
   }
 
+  searchForCurrentUserLike = (photoId, userId) => {
+    database
+      .ref("likes")
+      .child(photoId)
+      .once("value")
+      .then(item => {
+        item.forEach(snapshot => {
+          if (userId === snapshot.author) {
+            console.log(snapshot);
+          }
+          return false;
+        });
+      });
+  };
+
+  addLike = photoId => {
+    let likes = 0;
+    database
+      .ref("photos")
+      .child(photoId)
+      .once("value")
+      .then(snapshot => {
+        likes = snapshot.val().likes;
+
+        database
+          .ref("photos")
+          .child(photoId)
+          .update({
+            likes: likes + 1
+          });
+
+        this.loadNew();
+      });
+  };
+
   loadFeed = () => {
     this.setState({
       refresh: true,
@@ -41,6 +76,19 @@ export default class Feeds extends Component {
         const exist = snapshot.val() !== null;
         if (exist) {
           snapshot.forEach(data => {
+            let likes = 0;
+
+            database
+              .ref("likes")
+              .child(data.key)
+              .on(
+                "value",
+                likeSnapshot => {
+                  likes = likeSnapshot.numChildren();
+                },
+                () => console.log("error")
+              );
+
             database
               .ref("users")
               .child(data.val().author)
@@ -53,7 +101,8 @@ export default class Feeds extends Component {
                   posted: that.timeConverter(data.val().posted),
                   avatar: childSnapshot.val().avatar,
                   username: childSnapshot.val().username,
-                  userId: data.val().author
+                  userId: data.val().author,
+                  likes: data.val().likes
                 });
                 this.setState({
                   refresh: false,
@@ -240,15 +289,25 @@ export default class Feeds extends Component {
                       }}
                     >
                       <TouchableOpacity
-                        onPress={() =>
-                          this.setState({ color: !this.state.color })
-                        }
+                        onPress={() => {
+                          this.addLike(item.id);
+                          this.setState({ color: !this.state.color });
+                        }}
                       >
                         <Icon
                           name={
-                            this.state.color ? "ios-heart" : "ios-heart-empty"
+                            this.searchForCurrentUserLike(item.id, item.userId)
+                              ? "ios-heart"
+                              : "ios-heart-empty"
                           }
-                          style={{ color: this.state.color ? "red" : "black" }}
+                          style={{
+                            color: this.searchForCurrentUserLike(
+                              item.id,
+                              item.userId
+                            )
+                              ? "red"
+                              : "black"
+                          }}
                         />
                       </TouchableOpacity>
                     </View>
@@ -273,7 +332,9 @@ export default class Feeds extends Component {
                     </View>
                   </View>
                   <View style={{ paddingLeft: 10 }}>
-                    <Text style={{ fontWeight: "bold" }}>6 likes</Text>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {item.likes} likes
+                    </Text>
                   </View>
                   <View style={{ paddingLeft: 10, width: "100%" }}>
                     <Text>
