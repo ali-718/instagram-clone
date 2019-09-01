@@ -42,23 +42,58 @@ export default class Feeds extends Component {
   };
 
   addLike = photoId => {
-    let likes = 0;
+    let likesExist;
+    let UserLikeExist;
     database
       .ref("photos")
       .child(photoId)
       .once("value")
-      .then(snapshot => {
-        likes = snapshot.val().likes;
-
-        database
-          .ref("photos")
-          .child(photoId)
-          .update({
-            likes: likes + 1
-          });
-
-        this.loadNew();
+      .then(data => {
+        data.val().likes ? (likesExist = true) : (likesExist = false);
       });
+
+    setTimeout(() => {
+      if (likesExist !== undefined) {
+        if (likesExist) {
+          database
+            .ref("photos")
+            .child(photoId)
+            .child("likes")
+            .once("value")
+            .then(snapshot => {
+              snapshot.forEach(item => {
+                if (item.val().author === f.auth().currentUser.uid) {
+                  database
+                    .ref("photos")
+                    .child(photoId)
+                    .child("likes")
+                    .child(item.key)
+                    .set(null);
+                } else {
+                  database
+                    .ref("photos")
+                    .child(photoId)
+                    .child("likes")
+                    .push({
+                      author: f.auth().currentUser.uid
+                    });
+                }
+              });
+            });
+        } else {
+          database
+            .ref("photos")
+            .child(photoId)
+            .child("likes")
+            .push({
+              author: f.auth().currentUser.uid
+            });
+          console.log("still adding data");
+        }
+      } else {
+        console.log("problem is here");
+      }
+    }, 800);
   };
 
   loadFeed = () => {
@@ -76,19 +111,6 @@ export default class Feeds extends Component {
         const exist = snapshot.val() !== null;
         if (exist) {
           snapshot.forEach(data => {
-            let likes = 0;
-
-            database
-              .ref("likes")
-              .child(data.key)
-              .on(
-                "value",
-                likeSnapshot => {
-                  likes = likeSnapshot.numChildren();
-                },
-                () => console.log("error")
-              );
-
             database
               .ref("users")
               .child(data.val().author)
@@ -103,6 +125,8 @@ export default class Feeds extends Component {
                   username: childSnapshot.val().username,
                   userId: data.val().author,
                   likes: data.val().likes
+                    ? Object.values(data.val().likes).map(item => item.author)
+                    : []
                 });
                 this.setState({
                   refresh: false,
@@ -296,17 +320,15 @@ export default class Feeds extends Component {
                       >
                         <Icon
                           name={
-                            this.searchForCurrentUserLike(item.id, item.userId)
+                            item.likes.indexOf(f.auth().currentUser.uid) > -1
                               ? "ios-heart"
                               : "ios-heart-empty"
                           }
                           style={{
-                            color: this.searchForCurrentUserLike(
-                              item.id,
-                              item.userId
-                            )
-                              ? "red"
-                              : "black"
+                            color:
+                              item.likes.indexOf(f.auth().currentUser.uid) > -1
+                                ? "red"
+                                : "black"
                           }}
                         />
                       </TouchableOpacity>
@@ -332,9 +354,7 @@ export default class Feeds extends Component {
                     </View>
                   </View>
                   <View style={{ paddingLeft: 10 }}>
-                    <Text style={{ fontWeight: "bold" }}>
-                      {item.likes} likes
-                    </Text>
+                    <Text style={{ fontWeight: "bold" }}>6 likes</Text>
                   </View>
                   <View style={{ paddingLeft: 10, width: "100%" }}>
                     <Text>
