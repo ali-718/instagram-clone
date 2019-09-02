@@ -43,7 +43,6 @@ export default class Feeds extends Component {
 
   addLike = photoId => {
     let likesExist;
-    let UserLikeExist;
     database
       .ref("photos")
       .child(photoId)
@@ -69,6 +68,8 @@ export default class Feeds extends Component {
                     .child("likes")
                     .child(item.key)
                     .set(null);
+
+                  this.loadFeedForLikes();
                 } else {
                   database
                     .ref("photos")
@@ -77,6 +78,7 @@ export default class Feeds extends Component {
                     .push({
                       author: f.auth().currentUser.uid
                     });
+                  this.loadFeedForLikes();
                 }
               });
             });
@@ -88,12 +90,51 @@ export default class Feeds extends Component {
             .push({
               author: f.auth().currentUser.uid
             });
+          this.loadFeedForLikes();
           console.log("still adding data");
         }
       } else {
         console.log("problem is here");
       }
     }, 800);
+  };
+
+  loadFeedForLikes = async () => {
+    var that = this;
+    let Feed = [];
+    database
+      .ref("photos")
+      .once("value")
+      .then(snapshot => {
+        const exist = snapshot.val() !== null;
+        if (exist) {
+          snapshot.forEach(data => {
+            database
+              .ref("users")
+              .child(data.val().author)
+              .once("value")
+              .then(childSnapshot => {
+                Feed.push({
+                  id: data.key,
+                  url: data.val().url,
+                  caption: data.val().caption,
+                  posted: that.timeConverter(data.val().posted),
+                  avatar: childSnapshot.val().avatar,
+                  username: childSnapshot.val().username,
+                  userId: data.val().author,
+                  likes: data.val().likes
+                    ? Object.values(data.val().likes).map(item => item.author)
+                    : []
+                });
+                this.setState({
+                  refresh: false,
+                  isLoading: false
+                });
+              });
+          });
+        }
+      });
+    this.setState({ data: Feed });
   };
 
   loadFeed = () => {
@@ -106,6 +147,7 @@ export default class Feeds extends Component {
 
     database
       .ref("photos")
+      .orderByChild("posted")
       .once("value")
       .then(snapshot => {
         const exist = snapshot.val() !== null;
@@ -217,6 +259,7 @@ export default class Feeds extends Component {
                   backgroundColor: "white"
                 }}
               >
+                {console.log(this.state)}
                 {/* Feed header */}
                 <View
                   style={{
@@ -354,7 +397,11 @@ export default class Feeds extends Component {
                     </View>
                   </View>
                   <View style={{ paddingLeft: 10 }}>
-                    <Text style={{ fontWeight: "bold" }}>6 likes</Text>
+                    <Text style={{ fontWeight: "bold" }}>
+                      {item.likes.length === 0
+                        ? null
+                        : `${item.likes.length} likes`}
+                    </Text>
                   </View>
                   <View style={{ paddingLeft: 10, width: "100%" }}>
                     <Text>

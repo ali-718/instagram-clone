@@ -30,7 +30,7 @@ export default class Upload extends Component {
     progress: 0
   };
 
-  checkPermissions() {
+  checkPermissions = () => {
     const { status } = Permissions.askAsync(Permissions.CAMERA);
     this.setState({
       Camera: status
@@ -39,7 +39,7 @@ export default class Upload extends Component {
     this.setState({
       CameraRoll: statusRoll
     });
-  }
+  };
 
   s4 = () => {
     return Math.floor((1 + Math.random()) * 0x1000)
@@ -156,7 +156,10 @@ export default class Upload extends Component {
       .child(author)
       .child("photos")
       .child(this.state.ImageId)
-      .set(uploadData);
+      .set(uploadData)
+      .then(() => {
+        this.props.navigation.replace("Home");
+      });
 
     this.setState({
       progress: 100,

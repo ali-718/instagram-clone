@@ -8,6 +8,7 @@ import { f, database, auth, storage } from "./config/config";
 import { createAppContainer, createStackNavigator } from "react-navigation";
 import UserProfile from "./app/screens/UserProfile";
 import Comments from "./app/screens/Comments";
+import Edit from "./app/screens/Edit";
 
 class Tabbar extends Component {
   state = {
@@ -95,6 +96,9 @@ const Stack = createStackNavigator(
     },
     Comments: {
       screen: Comments
+    },
+    Edit: {
+      screen: Edit
     }
   },
   {

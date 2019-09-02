@@ -31,6 +31,7 @@ export default class Profile extends Component {
   };
 
   componentDidMount() {
+    this.props.navigation.addListener;
     f.auth().onAuthStateChanged(user => {
       if (user) {
         this.userFetchData();
@@ -65,6 +66,7 @@ export default class Profile extends Component {
   };
 
   loadNew = () => {
+    this.userFetchData();
     this.setState({
       refresh: true,
       isImageLoading: true,
@@ -189,6 +191,9 @@ export default class Profile extends Component {
                           }}
                         >
                           <Button
+                            onPress={() =>
+                              this.props.navigation.navigate("Edit")
+                            }
                             title="Edit"
                             type="solid"
                             buttonStyle={{ width: "80%" }}
