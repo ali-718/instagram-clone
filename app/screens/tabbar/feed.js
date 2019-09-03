@@ -51,7 +51,12 @@ export default class Feed extends Component {
                   width: "30%"
                 }}
               >
-                <Icon name="camera" type="Feather" style={{ fontSize: 25 }} />
+                <Icon
+                  onPress={() => this.props.navigation.navigate("Camera")}
+                  name="camera"
+                  type="Feather"
+                  style={{ fontSize: 25 }}
+                />
               </TouchableOpacity>
               <Image source={logo} style={{ width: 100, height: 30 }} />
             </View>

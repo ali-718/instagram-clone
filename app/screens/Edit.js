@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { Text, View, SafeAreaView, Image } from "react-native";
+import { Text, View, SafeAreaView, KeyboardAvoidingView } from "react-native";
 import { f, database, auth, storage } from "../../config/config";
 import {
   Input,
@@ -13,6 +13,8 @@ import {
 import { Avatar } from "react-native-elements";
 import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
+import styles from "../../constants/styles";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default class Edit extends Component {
   state = {
@@ -132,111 +134,128 @@ export default class Edit extends Component {
 
   render() {
     return (
-      <SafeAreaView style={{ width: "100%", flex: 1 }}>
-        <View
-          style={{
-            width: "100%",
-            justifyContent: "center",
-            alignItems: "center",
-            height: 50
-          }}
-        >
-          <View style={{ width: "90%", height: 50 }}>
-            <Icon
-              onPress={() => this.props.navigation.goBack()}
-              name="ios-arrow-back"
-            />
-          </View>
-        </View>
-        <View
-          style={{
-            width: "100%",
-            height: 200,
-            justifyContent: "center",
-            alignItems: "center"
-          }}
-        >
-          {this.state.uploading ? (
-            <Spinner color="blue" />
-          ) : (
-            <Avatar
-              showEditButton
-              size="xlarge"
-              rounded
-              source={{ uri: this.state.user.avatar }}
-              onPress={() => this.fetchImage()}
-            />
-          )}
-        </View>
-        <View
-          style={{
-            width: "100%",
-            flex: 1,
-            alignItems: "center"
-          }}
-        >
-          <View style={{ width: "80%", marginTop: 50 }}>
-            <Item floatingLabel>
-              <Label>Username</Label>
-              <Input
-                onChangeText={val =>
-                  this.setState({ user: { ...this.state.user, username: val } })
-                }
-                value={this.state.user.username}
-                placeholder="Name...!"
-              />
-            </Item>
-          </View>
-          <View style={{ width: "80%", marginTop: 50 }}>
-            <Item floatingLabel>
-              <Label>Name</Label>
-              <Input
-                onChangeText={val =>
-                  this.setState({ user: { ...this.state.user, name: val } })
-                }
-                value={this.state.user.name}
-                placeholder="Name...!"
-              />
-            </Item>
-          </View>
-          <View style={{ width: "80%", marginTop: 50 }}>
-            <Textarea
-              maxLength={150}
-              onChangeText={val =>
-                this.setState({
-                  user: { ...this.state.user, description: val }
-                })
-              }
-              value={this.state.user.description}
-              rowSpan={5}
-              bordered
-              placeholder="Description..."
-            />
-          </View>
-          <View
-            style={{
-              marginTop: 50,
-              width: "80%",
-              justifyContent: "center",
-              alignItems: "center"
-            }}
-          >
-            <Button
-              disabled={this.state.uploading == true ? true : false}
-              onPress={() => this.submitUserInfo()}
+      <KeyboardAvoidingView
+        behavior="padding"
+        enabled={true}
+        style={styles.SafeArea}
+      >
+        <SafeAreaView style={{ width: "100%", flex: 1 }}>
+          <ScrollView style={{ width: "100%", flex: 1 }}>
+            <View
               style={{
-                width: "30%",
+                width: "100%",
+                justifyContent: "center",
+                alignItems: "center",
+                height: 50
+              }}
+            >
+              <View
+                style={{
+                  width: "90%",
+                  height: 50,
+                  justifyContent: "center"
+                }}
+              >
+                <Icon
+                  onPress={() => this.props.navigation.goBack()}
+                  name="ios-arrow-back"
+                />
+              </View>
+            </View>
+            <View
+              style={{
+                width: "100%",
+                height: 200,
                 justifyContent: "center",
                 alignItems: "center"
               }}
-              rounded
-              primary
             >
-              <Text style={{ color: "white" }}>Save</Text>
-            </Button>
-          </View>
-        </View>
-      </SafeAreaView>
+              {this.state.uploading ? (
+                <Spinner color="blue" />
+              ) : (
+                <Avatar
+                  showEditButton
+                  size="xlarge"
+                  rounded
+                  source={{ uri: this.state.user.avatar }}
+                  onPress={() => this.fetchImage()}
+                />
+              )}
+            </View>
+            <View
+              style={{
+                width: "100%",
+                flex: 1,
+                alignItems: "center"
+              }}
+            >
+              <View style={{ width: "80%", marginTop: 50 }}>
+                <Item floatingLabel>
+                  <Label>Username</Label>
+                  <Input
+                    onChangeText={val =>
+                      this.setState({
+                        user: { ...this.state.user, username: val }
+                      })
+                    }
+                    value={this.state.user.username}
+                    placeholder="Name...!"
+                  />
+                </Item>
+              </View>
+              <View style={{ width: "80%", marginTop: 50 }}>
+                <Item floatingLabel>
+                  <Label>Name</Label>
+                  <Input
+                    onChangeText={val =>
+                      this.setState({ user: { ...this.state.user, name: val } })
+                    }
+                    value={this.state.user.name}
+                    placeholder="Name...!"
+                  />
+                </Item>
+              </View>
+              <View style={{ width: "80%", marginTop: 50 }}>
+                <Textarea
+                  maxLength={150}
+                  onChangeText={val =>
+                    this.setState({
+                      user: { ...this.state.user, description: val }
+                    })
+                  }
+                  value={this.state.user.description}
+                  rowSpan={5}
+                  bordered
+                  placeholder="Description..."
+                />
+              </View>
+              <View
+                style={{
+                  marginTop: 50,
+                  width: "80%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  paddingBottom: 30
+                }}
+              >
+                <Button
+                  disabled={this.state.uploading == true ? true : false}
+                  onPress={() => this.submitUserInfo()}
+                  style={{
+                    width: "30%",
+                    justifyContent: "center",
+                    alignItems: "center"
+                  }}
+                  rounded
+                  primary
+                >
+                  <Text style={{ color: "white" }}>Save</Text>
+                </Button>
+              </View>
+            </View>
+          </ScrollView>
+        </SafeAreaView>
+      </KeyboardAvoidingView>
     );
   }
 }

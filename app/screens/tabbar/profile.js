@@ -27,11 +27,11 @@ export default class Profile extends Component {
     userName: "",
     userAvatar: "",
     userRealName: "",
+    description: "",
     isImageLoading: true
   };
 
   componentDidMount() {
-    this.props.navigation.addListener;
     f.auth().onAuthStateChanged(user => {
       if (user) {
         this.userFetchData();
@@ -60,7 +60,8 @@ export default class Profile extends Component {
           userName: snapshot.val().username,
           userRealName: snapshot.val().name,
           email: snapshot.val().email,
-          isLoading: false
+          isLoading: false,
+          description: snapshot.val().description
         });
       });
   };
@@ -244,11 +245,7 @@ export default class Profile extends Component {
                     <Text style={{ fontWeight: "bold" }}>
                       {this.state.userRealName}
                     </Text>
-                    <Text>I am a Mobile app and website developer</Text>
-                    <Text>The developer you need</Text>
-                    <Text>Trainer at Sir Syed University</Text>
-                    <Text>Former Trainer at NED</Text>
-                    <Text>React Enthusiast</Text>
+                    <Text>{this.state.description}</Text>
                   </View>
                 </View>
                 <View
@@ -270,19 +267,23 @@ export default class Profile extends Component {
                     {this.state.isImageLoading ? (
                       <ActivityIndicator />
                     ) : (
-                      <FlatList
-                        style={{ flex: 1, width: "100%" }}
-                        data={this.state.imagesData}
-                        numColumns={3}
-                        renderItem={({ item }) => (
-                          <View key={item.id} style={{ margin: 5 }}>
-                            <Image
-                              source={{ uri: item.url }}
-                              style={{ width: 100, height: 100 }}
-                            />
-                          </View>
-                        )}
-                      />
+                      <View style={{ width: "100%", alignItems: "center" }}>
+                        <FlatList
+                          style={{
+                            flex: 1
+                          }}
+                          data={this.state.imagesData}
+                          numColumns={3}
+                          renderItem={({ item }) => (
+                            <View key={item.id} style={{ margin: 5 }}>
+                              <Image
+                                source={{ uri: item.url }}
+                                style={{ width: 100, height: 100 }}
+                              />
+                            </View>
+                          )}
+                        />
+                      </View>
                     )}
                   </View>
                 </View>

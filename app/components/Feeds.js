@@ -397,11 +397,12 @@ export default class Feeds extends Component {
                     </View>
                   </View>
                   <View style={{ paddingLeft: 10 }}>
-                    <Text style={{ fontWeight: "bold" }}>
-                      {item.likes.length === 0
-                        ? null
-                        : `${item.likes.length} likes`}
-                    </Text>
+                    {item.likes.length === 0 ? null : (
+                      <Text style={{ fontWeight: "bold" }}>
+                        {item.likes.length}{" "}
+                        {item.likes.length === 1 ? "like" : "likes"}
+                      </Text>
+                    )}
                   </View>
                   <View style={{ paddingLeft: 10, width: "100%" }}>
                     <Text>

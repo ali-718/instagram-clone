@@ -9,6 +9,7 @@ import { createAppContainer, createStackNavigator } from "react-navigation";
 import UserProfile from "./app/screens/UserProfile";
 import Comments from "./app/screens/Comments";
 import Edit from "./app/screens/Edit";
+import CameraComponent from "./app/screens/Camera";
 
 class Tabbar extends Component {
   state = {
@@ -99,11 +100,18 @@ const Stack = createStackNavigator(
     },
     Edit: {
       screen: Edit
+    },
+    Camera: {
+      screen: CameraComponent
+    },
+    Upload: {
+      screen: Upload
     }
   },
   {
     headerMode: "none",
-    mode: "modal"
+    mode: "modal",
+    initialRouteName: "Home"
   }
 );
 

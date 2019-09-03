@@ -29,6 +29,7 @@ export default class UserProfile extends Component {
     userName: "",
     userAvatar: "",
     userRealName: "",
+    description: "",
     isImageLoading: true
   };
 
@@ -69,7 +70,8 @@ export default class UserProfile extends Component {
           userName: snapshot.val().username,
           userRealName: snapshot.val().name,
           email: snapshot.val().email,
-          isLoading: false
+          isLoading: false,
+          description: snapshot.val().description
         });
       });
   };
@@ -323,11 +325,7 @@ export default class UserProfile extends Component {
                     <Text style={{ fontWeight: "bold" }}>
                       {this.state.userRealName}
                     </Text>
-                    <Text>I am a Mobile app and website developer</Text>
-                    <Text>The developer you need</Text>
-                    <Text>Trainer at Sir Syed University</Text>
-                    <Text>Former Trainer at NED</Text>
-                    <Text>React Enthusiast</Text>
+                    <Text>{this.state.description}</Text>
                   </View>
                 </View>
                 <View

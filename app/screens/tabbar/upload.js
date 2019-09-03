@@ -184,6 +184,9 @@ export default class Upload extends Component {
   };
 
   cancelButton = () => {
+    if (this.props.navigation.getParam("Image")) {
+      this.props.navigation.goBack();
+    }
     if (!this.state.uploading) {
       this.setState({
         ImageId: null,
@@ -200,6 +203,16 @@ export default class Upload extends Component {
 
   componentDidMount() {
     // auth.signOut();
+
+    const ImageProps = this.props.navigation.getParam("Image", null);
+
+    if (ImageProps) {
+      this.setState({
+        ImageSelected: true,
+        ImageUri: ImageProps,
+        ImageId: this.uniqueId()
+      });
+    }
 
     f.auth().onAuthStateChanged(user => {
       if (user) {
@@ -317,6 +330,9 @@ export default class Upload extends Component {
                             justifyContent: "center",
                             alignItems: "center"
                           }}
+                          disabled={
+                            this.state.uploading === true ? true : false
+                          }
                           title="Cancel"
                           onPress={() => this.cancelButton()}
                         />
@@ -329,6 +345,9 @@ export default class Upload extends Component {
                         }}
                       >
                         <Button
+                          disabled={
+                            this.state.uploading === true ? true : false
+                          }
                           buttonStyle={{
                             justifyContent: "center",
                             alignItems: "center"
