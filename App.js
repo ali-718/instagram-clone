@@ -10,6 +10,7 @@ import UserProfile from "./app/screens/UserProfile";
 import Comments from "./app/screens/Comments";
 import Edit from "./app/screens/Edit";
 import CameraComponent from "./app/screens/Camera";
+import Login from "./app/screens/Login";
 
 class Tabbar extends Component {
   state = {
@@ -106,12 +107,15 @@ const Stack = createStackNavigator(
     },
     Upload: {
       screen: Upload
+    },
+    Login: {
+      screen: Login
     }
   },
   {
     headerMode: "none",
     mode: "modal",
-    initialRouteName: "Home"
+    initialRouteName: "Login"
   }
 );
 
