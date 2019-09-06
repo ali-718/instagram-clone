@@ -11,19 +11,20 @@ import Comments from "./app/screens/Comments";
 import Edit from "./app/screens/Edit";
 import CameraComponent from "./app/screens/Camera";
 import Login from "./app/screens/Login";
+import SplashScreen from "./app/screens/SplashScreen";
 
 class Tabbar extends Component {
   state = {
     activeTab: 0
   };
 
-  loginUser = async () => {
-    await auth.signInWithEmailAndPassword("test@test.com", "alihaider");
-  };
+  // loginUser = async () => {
+  //   await auth.signIn
+  // };
 
   constructor() {
     super();
-    this.loginUser();
+    // this.loginUser();
   }
 
   componentDidMount() {
@@ -110,12 +111,15 @@ const Stack = createStackNavigator(
     },
     Login: {
       screen: Login
+    },
+    SplashScreen: {
+      screen: SplashScreen
     }
   },
   {
     headerMode: "none",
     mode: "modal",
-    initialRouteName: "Login"
+    initialRouteName: "SplashScreen"
   }
 );
 

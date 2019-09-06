@@ -8,7 +8,8 @@ import {
   Dimensions,
   ActivityIndicator,
   FlatList,
-  RefreshControl
+  RefreshControl,
+  Alert
 } from "react-native";
 import styles from "../../../constants/styles";
 import { f, database, auth, storage } from "../../../config/config";
@@ -29,6 +30,24 @@ export default class Profile extends Component {
     userRealName: "",
     description: "",
     isImageLoading: true
+  };
+
+  Logout = () => {
+    Alert.alert("Alert", "You will be logout from the session", [
+      {
+        text: "Cancel",
+        onPress: () => null,
+        style: "cancel"
+      },
+      {
+        text: "Logout",
+        onPress: () => {
+          f.auth().signOut();
+          this.props.navigation.navigate("SplashScreen");
+        },
+        style: "cancel"
+      }
+    ]);
   };
 
   componentDidMount() {
@@ -78,13 +97,20 @@ export default class Profile extends Component {
       .child(f.auth().currentUser.uid)
       .child("photos")
       .once("value", res => {
-        res.forEach(snapshot => {
-          this.state.imagesData.push({ id: snapshot.key, ...snapshot.val() });
+        if (res.val()) {
+          res.forEach(snapshot => {
+            this.state.imagesData.push({ id: snapshot.key, ...snapshot.val() });
+            this.setState({
+              refresh: false,
+              isImageLoading: false
+            });
+          });
+        } else {
           this.setState({
             refresh: false,
             isImageLoading: false
           });
-        });
+        }
       });
   };
 
@@ -206,6 +232,7 @@ export default class Profile extends Component {
                           }}
                         >
                           <Button
+                            onPress={() => this.Logout()}
                             title="logout"
                             type="solid"
                             buttonStyle={{
@@ -268,21 +295,25 @@ export default class Profile extends Component {
                       <ActivityIndicator />
                     ) : (
                       <View style={{ width: "100%", alignItems: "center" }}>
-                        <FlatList
-                          style={{
-                            flex: 1
-                          }}
-                          data={this.state.imagesData}
-                          numColumns={3}
-                          renderItem={({ item }) => (
-                            <View key={item.id} style={{ margin: 5 }}>
-                              <Image
-                                source={{ uri: item.url }}
-                                style={{ width: 100, height: 100 }}
-                              />
-                            </View>
-                          )}
-                        />
+                        {this.state.imagesData.length > 0 ? (
+                          <FlatList
+                            style={{
+                              flex: 1
+                            }}
+                            data={this.state.imagesData}
+                            numColumns={3}
+                            renderItem={({ item }) => (
+                              <View key={item.id} style={{ margin: 5 }}>
+                                <Image
+                                  source={{ uri: item.url }}
+                                  style={{ width: 100, height: 100 }}
+                                />
+                              </View>
+                            )}
+                          />
+                        ) : (
+                          <Text>No Images here</Text>
+                        )}
                       </View>
                     )}
                   </View>

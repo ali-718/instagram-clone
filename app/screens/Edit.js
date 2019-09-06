@@ -141,27 +141,30 @@ export default class Edit extends Component {
       >
         <SafeAreaView style={{ width: "100%", flex: 1 }}>
           <ScrollView style={{ width: "100%", flex: 1 }}>
-            <View
-              style={{
-                width: "100%",
-                justifyContent: "center",
-                alignItems: "center",
-                height: 50
-              }}
-            >
+            {this.props.navigation.getParam("fromLogin") ? null : (
               <View
                 style={{
-                  width: "90%",
-                  height: 50,
-                  justifyContent: "center"
+                  width: "100%",
+                  justifyContent: "center",
+                  alignItems: "center",
+                  height: 50
                 }}
               >
-                <Icon
-                  onPress={() => this.props.navigation.goBack()}
-                  name="ios-arrow-back"
-                />
+                <View
+                  style={{
+                    width: "90%",
+                    height: 50,
+                    justifyContent: "center"
+                  }}
+                >
+                  <Icon
+                    onPress={() => this.props.navigation.goBack()}
+                    name="ios-arrow-back"
+                  />
+                </View>
               </View>
-            </View>
+            )}
+
             <View
               style={{
                 width: "100%",

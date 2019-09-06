@@ -2,10 +2,61 @@ import React, { Component } from "react";
 import { Text, View, Image, TextInput, TouchableOpacity } from "react-native";
 import Logo from "../../assets/Images/logo.png";
 import { Icon } from "native-base";
+import * as Facebook from "expo-facebook";
+import { f, database, auth, storage } from "../../config/config";
 
 export default class Login extends Component {
   state = {
-    Email: ""
+    Email: "",
+    Password: ""
+  };
+
+  constructor() {
+    super();
+    f.auth().onAuthStateChanged(user => {
+      if (user) {
+        this.props.navigation.navigate("Home");
+      }
+    });
+  }
+
+  FacebookLogin = async () => {
+    const { type, token } = await Facebook.logInWithReadPermissionsAsync(
+      "1684076001722836",
+      { permissions: ["public_profile", "email"] }
+    );
+
+    if (type === "success") {
+      const credentials = f.auth.FacebookAuthProvider.credential(token);
+
+      f.auth()
+        .signInWithCredential(credentials)
+        .then(res => {
+          // this.props.navigation.navigate("Home");
+          database
+            .ref("users")
+            .child(res.user.uid)
+            .once("value")
+            .then(res => {
+              if (res.val()) {
+                this.props.navigation.navigate("Edit", { fromLogin: true });
+              } else {
+                database
+                  .ref("users")
+                  .child(res.user.uid)
+                  .set({
+                    name: res.user.providerData[0].displayName,
+                    email: res.user.providerData[0].email,
+                    avatar: res.user.providerData[0].photoURL
+                  })
+                  .then(() =>
+                    this.props.navigation.navigate("Edit", { fromLogin: true })
+                  );
+              }
+            });
+        })
+        .catch(e => console.log(e));
+    }
   };
 
   render() {
@@ -41,7 +92,7 @@ export default class Login extends Component {
           />
           <TextInput
             onChangeText={val => {
-              this.setState({ Email: val });
+              this.setState({ Password: val });
             }}
             value={this.state.Email}
             style={{
@@ -75,6 +126,7 @@ export default class Login extends Component {
           </TouchableOpacity>
           <Text>OR</Text>
           <TouchableOpacity
+            onPress={() => this.FacebookLogin()}
             style={{
               backgroundColor: "#3498F1",
               width: "80%",
