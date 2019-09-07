@@ -152,7 +152,6 @@ export default class Profile extends Component {
                       alignItems: "flex-start"
                     }}
                   >
-                    {console.log(this.state)}
                     <Avatar
                       size="large"
                       rounded

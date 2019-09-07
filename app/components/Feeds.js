@@ -34,7 +34,7 @@ export default class Feeds extends Component {
       .then(item => {
         item.forEach(snapshot => {
           if (userId === snapshot.author) {
-            console.log(snapshot);
+            // console.log(snapshot);
           }
           return false;
         });
@@ -91,7 +91,7 @@ export default class Feeds extends Component {
               author: f.auth().currentUser.uid
             });
           this.loadFeedForLikes();
-          console.log("still adding data");
+          // console.log("still adding data");
         }
       } else {
         console.log("problem is here");
@@ -259,7 +259,6 @@ export default class Feeds extends Component {
                   backgroundColor: "white"
                 }}
               >
-                {console.log(this.state)}
                 {/* Feed header */}
                 <View
                   style={{

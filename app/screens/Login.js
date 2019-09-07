@@ -11,15 +11,6 @@ export default class Login extends Component {
     Password: ""
   };
 
-  constructor() {
-    super();
-    f.auth().onAuthStateChanged(user => {
-      if (user) {
-        this.props.navigation.navigate("Home");
-      }
-    });
-  }
-
   FacebookLogin = async () => {
     const { type, token } = await Facebook.logInWithReadPermissionsAsync(
       "1684076001722836",
@@ -32,13 +23,13 @@ export default class Login extends Component {
       f.auth()
         .signInWithCredential(credentials)
         .then(res => {
-          // this.props.navigation.navigate("Home");
           database
             .ref("users")
             .child(res.user.uid)
             .once("value")
             .then(res => {
               if (res.val()) {
+                console.log("res.val() is availaible");
                 this.props.navigation.navigate("Edit", { fromLogin: true });
               } else {
                 database
@@ -49,9 +40,10 @@ export default class Login extends Component {
                     email: res.user.providerData[0].email,
                     avatar: res.user.providerData[0].photoURL
                   })
-                  .then(() =>
-                    this.props.navigation.navigate("Edit", { fromLogin: true })
-                  );
+                  .then(() => {
+                    console.log("res.val() not working");
+                    this.props.navigation.navigate("Edit", { fromLogin: true });
+                  });
               }
             });
         })

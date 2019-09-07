@@ -8,7 +8,28 @@ export default class SplashScreen extends Component {
   componentDidMount() {
     f.auth().onAuthStateChanged(user => {
       if (user) {
-        this.props.navigation.navigate("Home");
+        database
+          .ref("users")
+          .child(user.uid)
+          .once("value")
+          .then(res => {
+            if (res.val()) {
+              this.props.navigation.navigate("Home");
+            } else {
+              database
+                .ref("users")
+                .child(user.uid)
+                .set({
+                  name: user.providerData[0].displayName,
+                  email: user.providerData[0].email,
+                  avatar: user.providerData[0].photoURL
+                })
+                .then(() => {
+                  console.log("res.val() not working");
+                  this.props.navigation.navigate("Edit", { fromLogin: true });
+                });
+            }
+          });
       } else {
         this.props.navigation.navigate("Login");
       }

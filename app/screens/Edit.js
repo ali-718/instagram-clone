@@ -53,7 +53,6 @@ export default class Edit extends Component {
 
       this.uploadImage(this.state.ImageUri);
     } else {
-      console.log("cancelled");
       this.setState({
         ImageSelected: false
       });
@@ -91,7 +90,6 @@ export default class Edit extends Component {
       () => console.log(e),
       final => {
         uploadRef.snapshot.ref.getDownloadURL().then(download => {
-          console.log(download);
           this.setState({
             uploading: false,
             user: { ...this.state.user, avatar: download }
