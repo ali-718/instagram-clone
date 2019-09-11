@@ -12,6 +12,8 @@ import Edit from "./app/screens/Edit";
 import CameraComponent from "./app/screens/Camera";
 import Login from "./app/screens/Login";
 import SplashScreen from "./app/screens/SplashScreen";
+import Testing from "./app/screens/Testing";
+import Messages from "./app/screens/Messages";
 
 class Tabbar extends Component {
   state = {
@@ -114,6 +116,12 @@ const Stack = createStackNavigator(
     },
     SplashScreen: {
       screen: SplashScreen
+    },
+    Testing: {
+      screen: Testing
+    },
+    Messages: {
+      screen: Messages
     }
   },
   {

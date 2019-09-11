@@ -15,6 +15,7 @@ import * as Permissions from "expo-permissions";
 import * as ImagePicker from "expo-image-picker";
 import { Button } from "react-native-elements";
 import { Textarea } from "native-base";
+import { ScrollView } from "react-native-gesture-handler";
 
 export default class Upload extends Component {
   state = {
@@ -232,18 +233,14 @@ export default class Upload extends Component {
   }
   render() {
     return (
-      <SafeAreaView style={styles.SafeArea}>
+      <SafeAreaView
+        style={[
+          styles.SafeArea,
+          { justifyContent: "center", alignItems: "center" }
+        ]}
+      >
         {this.state.isLoading === false ? (
-          <KeyboardAvoidingView
-            enabled={true}
-            behavior="padding"
-            style={{
-              justifyContent: "center",
-              alignItems: "center",
-              flex: 1,
-              width: "100%"
-            }}
-          >
+          <ScrollView style={{ width: "100%", flex: 1 }}>
             {this.state.isLogin == true ? (
               this.state.ImageSelected ? (
                 <View
@@ -330,9 +327,6 @@ export default class Upload extends Component {
                             justifyContent: "center",
                             alignItems: "center"
                           }}
-                          disabled={
-                            this.state.uploading === true ? true : false
-                          }
                           title="Cancel"
                           onPress={() => this.cancelButton()}
                         />
@@ -395,7 +389,7 @@ export default class Upload extends Component {
                 <Text> Please log in to upload photos </Text>
               </View>
             )}
-          </KeyboardAvoidingView>
+          </ScrollView>
         ) : (
           <View
             style={{

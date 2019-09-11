@@ -30,6 +30,7 @@ export default class UserProfile extends Component {
     userAvatar: "",
     userRealName: "",
     description: "",
+    userId: "",
     isImageLoading: true
   };
 
@@ -66,6 +67,7 @@ export default class UserProfile extends Component {
       .child(selectedId)
       .once("value", snapshot => {
         this.setState({
+          userId: this.props.navigation.getParam("Id"),
           userAvatar: snapshot.val().avatar,
           userName: snapshot.val().username,
           userRealName: snapshot.val().name,
@@ -209,7 +211,6 @@ export default class UserProfile extends Component {
                       alignItems: "flex-start"
                     }}
                   >
-                    {console.log(this.state)}
                     <Avatar
                       size="large"
                       rounded
@@ -238,7 +239,7 @@ export default class UserProfile extends Component {
                         }}
                       >
                         <View style={{ width: "50%" }}>
-                          <View style={{ width: "80%" }}>
+                          <View style={{ width: "90%" }}>
                             <Button
                               onPress={() => this.setState({ isFollow: false })}
                               title="unfollow"
@@ -249,9 +250,14 @@ export default class UserProfile extends Component {
                             />
                           </View>
                         </View>
-                        <View style={{ width: "50%" }}>
-                          <View style={{ width: "80%" }}>
+                        <View style={{ width: "50%", alignItems: "center" }}>
+                          <View style={{ width: "90%" }}>
                             <Button
+                              onPress={() =>
+                                this.props.navigation.navigate("Messages", {
+                                  user: this.state
+                                })
+                              }
                               title="message"
                               type="solid"
                               style={{
